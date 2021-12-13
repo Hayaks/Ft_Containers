@@ -1,6 +1,7 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
+#include "../iterator/RandomAccessIterator.hpp"
 #include <cstddef>
 #include <iostream>
 #include <memory>
