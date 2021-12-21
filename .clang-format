@@ -10,4 +10,4 @@ AllowShortBlocksOnASingleLine: Never
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakTemplateDeclarations: Yes
 IndentCaseLabels: true
-SpacesInAnglesStyle: true
+SpacesInAngles: true

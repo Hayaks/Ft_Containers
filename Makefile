@@ -22,6 +22,11 @@ RM				= rm -rf
 
 all:			$(NAME) $(STL)
 
+diff:			all
+				mkdir -p diff/
+				./$(NAME) > diff/container.txt
+				./$(STL) > diff/stl.txt
+
 $(NAME):		$(OBJS_DIR) $(OBJS)
 				$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
@@ -38,7 +43,7 @@ $(OBJS_DIR_STL):
 				@mkdir $(OBJS_DIR_STL)
 
 $(OBJS_DIR_STL)%.o:	./%.cpp
-				$(CC) $(CFLAGS) -DFT=stl $(HEADER) -c $< -o $@
+				$(CC) $(CFLAGS) -DFT=std $(HEADER) -c $< -o $@
 
 fsan:			$(OBJS_DIR) $(OBJS)
 				$(CC) $(CFLAGS) $(OBJS) $(FSAN) -o $(NAME)
