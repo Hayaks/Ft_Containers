@@ -11,9 +11,11 @@ OBJS_STL		= $(addprefix $(OBJS_DIR_STL), $(SRCS:.cpp=.o))
 
 HEADER			= -I ./include/
 
-SRCS			= main.cpp
+SRCS_DIR		= ./src/
 
-FOLDER			= $(addprefix ./, $(SRCS))
+SRCS			= vector.cpp main.cpp
+
+FOLDER			= $(addprefix $(SRCS_DIR), $(SRCS))
 
 CC				= clang++
 CFLAGS 			= -Wall -Wextra -Werror -std=c++98
@@ -33,7 +35,7 @@ $(NAME):		$(OBJS_DIR) $(OBJS)
 $(OBJS_DIR):
 				@mkdir $(OBJS_DIR)
 
-$(OBJS_DIR)%.o:	./%.cpp
+$(OBJS_DIR)%.o:	$(SRCS_DIR)%.cpp
 				$(CC) $(CFLAGS) -DFT=ft $(HEADER) -c $< -o $@
 
 $(STL):			$(OBJS_DIR_STL) $(OBJS_STL)
@@ -42,7 +44,7 @@ $(STL):			$(OBJS_DIR_STL) $(OBJS_STL)
 $(OBJS_DIR_STL):
 				@mkdir $(OBJS_DIR_STL)
 
-$(OBJS_DIR_STL)%.o:	./%.cpp
+$(OBJS_DIR_STL)%.o:	$(SRCS_DIR)%.cpp
 				$(CC) $(CFLAGS) -DFT=std $(HEADER) -c $< -o $@
 
 fsan:			$(OBJS_DIR) $(OBJS)

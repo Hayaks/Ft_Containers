@@ -50,7 +50,14 @@ namespace ft
                                const allocator_type& alloc =
         allocator_type());*/
 
-        // vector(const vector& x);
+        vector(const vector& x)
+        {
+            _point = _alloc.allocate(x._size);
+            _capacity = x._size;
+            _size = x._size;
+            for (size_type i = 0; i < _size; i++)
+                _alloc.construct(&_point[i], x[i]);
+        }
 
         // Destructor
         virtual ~vector()
