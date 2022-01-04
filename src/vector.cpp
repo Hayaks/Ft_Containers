@@ -12,6 +12,7 @@ void ft_vector_constructor()
     FT::vector< int, std::allocator< int > > empty2;
     FT::vector< int >                        int_size1(4);
     FT::vector< int >                        int_size2(5, 8);
+    FT::vector< int >                        int_copy(int_size2);
 
     std::cout << WHITE + "\n||||| Constructor/Destructor |||||" + CLEAN
               << std::endl;
@@ -29,4 +30,9 @@ void ft_vector_constructor()
     std::cout << GREEN + "\t-Elements: "
               << "[" << int_size2[0] << ", " << int_size2[1] << ", "
               << int_size2[2] << "]" + CLEAN << "\n";
+    std::cout << YELLOW + "\nVector copy:" + CLEAN << std::endl;
+    std::cout << GREEN << "\t-Size: " << int_copy.size() << CLEAN << std::endl;
+    std::cout << GREEN + "\t-Elements: "
+              << "[" << int_copy[0] << ", " << int_copy[1] << ", "
+              << int_copy[2] << "]" + CLEAN << "\n";
 }
