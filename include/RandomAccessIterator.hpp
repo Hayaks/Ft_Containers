@@ -1,19 +1,22 @@
 #ifndef RANDOMACCESSITERATOR_HPP
 #define RANDOMACCESSITERATOR_HPP
 
+#include "utils.hpp"
 #include <cstddef>
 #include <iterator>
 
+#include "./util/is_const.hpp"
+
 namespace ft
 {
-    template <class T>
+    template < class T, bool Is_const >
     class RandomAccessIterator
     {
       public:
+        typedef typename ft::is_const< Is_const, const T, T >::type value_type;
         typedef std::ptrdiff_t                  difference_type;
-        typedef T                               value_type;
-        typedef T*                              pointer;
-        typedef T&                              reference;
+        typedef value_type*                     pointer;
+        typedef value_type&                     reference;
         typedef std::random_access_iterator_tag iterator_category;
 
       protected:
@@ -80,14 +83,14 @@ namespace ft
 
         RandomAccessIterator operator++(int)
         {
-            RandomAccessIterator<T> tmp(*this);
+            RandomAccessIterator< T, Is_const > tmp(*this);
             _point++;
             return (tmp);
         }
 
         RandomAccessIterator operator--(int)
         {
-            RandomAccessIterator<T> tmp(*this);
+            RandomAccessIterator< T, Is_const > tmp(*this);
             _point--;
             return (tmp);
         }
