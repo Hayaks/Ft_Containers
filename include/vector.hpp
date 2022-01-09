@@ -88,10 +88,25 @@ namespace ft
         }
 
         // Iterators
-        // iterator               begin();
-        // const_iterator         begin() const;
-        // iterator               end();
-        // const_iterator         end() const;
+        iterator begin()
+        {
+            return iterator(_point);
+        }
+
+        const_iterator begin() const
+        {
+            return const_iterator(_point);
+        }
+
+        iterator end()
+        {
+            return iterator(_point + _size);
+        }
+
+        const_iterator end() const
+        {
+            return const_iterator(_point + _size);
+        }
         // reverse_iterator       rbegin();
         // const_reverse_iterator rbegin() const;
         // reverse_iterator       rend();
@@ -103,8 +118,28 @@ namespace ft
             return (_size);
         }
 
-        // size_type max_size() const;
-        // void      resize(size_type n, value_type val = value_type());
+        size_type max_size() const
+        {
+            return (_alloc.max_size());
+        }
+
+        void resize(size_type n, value_type val = value_type())
+        {
+            if (n < _size)
+            {
+                for (size_type i = n; i < _size; i++)
+                    _alloc.destroy(&_point[i]);
+            }
+            else if (n > _size)
+            {
+                if (n > _capacity * 2)
+                    reserve(n);
+                else
+                    reserve(_capacity * 2);
+                for (; _size < n; ++_size)
+                    _alloc.construct(&_point[_size], val);
+            }
+        }
 
         size_type capacity() const
         {
@@ -115,7 +150,28 @@ namespace ft
         {
             return (_size == 0);
         }
-        // void      reserve(size_type n);
+
+        void reserve(size_type n)
+        {
+            if (n > max_size())
+                throw std::length_error("Vector (reserve)");
+            if (n <= _capacity)
+                return;
+            else
+            {
+                pointer tmp;
+
+                tmp = _alloc.allocate(n);
+                for (size_type i = 0; i < _size; i++)
+                {
+                    _alloc.construct(&tmp[i], _point[i]);
+                    _alloc.destroy(&_point[i]);
+                }
+                _alloc.deallocate(_point, _capacity);
+                _point = tmp;
+                _capacity = n;
+            }
+        }
 
         // Element access
         reference operator[](size_type n)
@@ -163,20 +219,147 @@ namespace ft
         }
 
         // Modifiers
-        // template <class InputIterator>
-        // void     assign(InputIterator first, InputIterator last); // Faux
-        // void     assign(size_type n, const value_type& val);
-        // void     push_back(const value_type& val);
-        // void     pop_back();
-        // iterator insert(iterator position, const value_type& val);
-        // void     insert(iterator position, size_type n, const value_type&
-        // val); template <class InputIterator> void insert(iterator position,
-        // InputIterator first, InputIterator last); iterator erase(iterator
-        // position); iterator erase(iterator first, iterator last); void
-        // swap(vector& x); void     clear();
+        template < class InputIterator >
+        void assign(typename enable_if< !is_integral< InputIterator >::value,
+                                        InputIterator >::type first,
+                    InputIterator                             last)
+        {
+            InputIterator tmp = first;
+            size_type     size = 0;
+
+            for (; tmp != last; tmp++)
+                size++;
+            this->clear();
+            if (size > _capacity)
+                reserve(size);
+            for (size_type i = 0; i < size; ++i)
+                _alloc.construct(&_point[i], size);
+            _size = size;
+        }
+
+        void assign(size_type n, const value_type& val)
+        {
+            this->clear();
+            if (n > _capacity)
+                reserve(n);
+            for (size_type i = 0; i < n; i++)
+                _alloc.construct(&_point[i], val);
+            _size = n;
+        }
+
+        void push_back(const value_type& val)
+        {
+            if (_size == _capacity)
+                reserve(_capacity == 0 ? 1 : _capacity * 2);
+            _alloc.construct(&_point[_size], val);
+            _size++;
+        }
+
+        void pop_back()
+        {
+            _alloc.destroy(&_point[_size - 1]);
+            _size--;
+        }
+
+        iterator insert(iterator position, const value_type& val)
+        {
+            size_type pos = position - begin();
+
+            if (_size == _capacity)
+                reserve(_capacity == 0 ? 1 : _capacity * 2);
+            _size++;
+            for (size_type i = _size; i > pos; i--)
+            {
+                _alloc.construct(&_point[i], _point[i - 1]);
+                _alloc.destroy(&_point[i - 1]);
+            }
+            _alloc.construct(&_point[pos], val);
+            return iterator(&_point[pos]);
+        }
+
+        void insert(iterator position, size_type n, const value_type& val)
+        {
+            size_type pos = position - begin();
+
+            if (_size + n > _capacity)
+                reserve(_capacity == 0 ? n : _size + n);
+            _size = _size + n;
+            for (size_type i = _size; i != pos + n; i--)
+            {
+                _alloc.construct(&_point[i], _point[i - n]);
+                _alloc.destroy(&_point[i - n]);
+            }
+            for (size_type i = pos; i != pos + n; ++i)
+                _alloc.construct(&_point[i], val);
+        }
+
+        template < class InputIterator >
+        void insert(iterator                                  position,
+                    typename enable_if< !is_integral< InputIterator >::value,
+                                        InputIterator >::type first,
+                    InputIterator                             last)
+        {
+            size_type pos = position - begin();
+            size_type n = 0;
+
+            for (InputIterator it = first; it != last; ++it)
+                n++;
+            if (_size + n > _capacity * 2)
+                reserve(_size + n);
+            else if (_size + n > _capacity)
+                reserve(_capacity * 2);
+            _size = _size + n;
+            for (size_type i = _size; i != pos + n; i--)
+            {
+                _alloc.construct(&_point[i], _point[i - n]);
+                _alloc.destroy(&_point[i - n]);
+            }
+            for (size_type i = pos; i != pos + n; ++i, ++first)
+                _alloc.construct(&_point[i], *first);
+        }
+
+        iterator erase(iterator position)
+        {
+            size_type pos = position - begin();
+
+            for (size_type i = pos; i < _size + 1; ++i)
+            {
+                _alloc.destroy(&_point[i]);
+                _alloc.construct(&_point[i], _point[i + 1]);
+            }
+            _alloc.destroy(&_point[_size - 1]);
+            _size--;
+            return iterator(position);
+        }
+
+        // iterator erase(iterator first, iterator last);
+
+        void swap(vector& x)
+        {
+            pointer   tmp_point = _point;
+            size_type tmp_capacity = _capacity;
+            size_type tmp_size = _size;
+
+            _point = x._point;
+            _capacity = x._capacity;
+            _size = x._size;
+            x._point = tmp_point;
+            x._capacity = tmp_capacity;
+            x._size = tmp_size;
+        }
+
+        void clear()
+        {
+            for (size_type i = 0; i < _size; i++)
+                _alloc.destroy(&_point[i]);
+            _size = 0;
+        }
 
         // Allocator
-        // allocator_type get_allocator() const;
+        allocator_type get_allocator() const
+        {
+            return (_alloc);
+        }
     };
 
     /*template <class T, class Allocator>
@@ -191,6 +374,11 @@ namespace ft
     _capacity(), _size()
     {
     }*/
+    template < class T, class Allocator >
+    void swap(vector< T, Allocator >& x, vector< T, Allocator >& y)
+    {
+        x.swap(y);
+    }
 } // namespace ft
 
 #endif

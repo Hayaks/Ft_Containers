@@ -1,7 +1,6 @@
 #ifndef RANDOMACCESSITERATOR_HPP
 #define RANDOMACCESSITERATOR_HPP
 
-#include "utils.hpp"
 #include <cstddef>
 #include <iterator>
 
