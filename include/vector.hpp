@@ -2,6 +2,7 @@
 #define VECTOR_HPP
 
 #include "RandomAccessIterator.hpp"
+#include "ReverseIterator.hpp"
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -25,10 +26,10 @@ namespace ft
         typedef typename allocator_type::const_pointer    const_pointer;
         typedef RandomAccessIterator< value_type, false > iterator;
         typedef RandomAccessIterator< value_type, true >  const_iterator;
-        // typedef ReverseIterator< iterator >               reverse_iterator;
-        // typedef ReverseIterator< const_iterator > const_reverse_iterator;
-        typedef std::ptrdiff_t difference_type;
-        typedef std::size_t    size_type;
+        typedef ReverseIterator< iterator >               reverse_iterator;
+        typedef ReverseIterator< const_iterator > const_reverse_iterator;
+        typedef std::ptrdiff_t                    difference_type;
+        typedef std::size_t                       size_type;
 
       private:
         pointer        _point;
@@ -73,10 +74,11 @@ namespace ft
 
         vector(const vector& x)
         {
+            _alloc = x._alloc;
             _point = _alloc.allocate(x._size);
             _capacity = x._size;
             _size = x._size;
-            for (size_type i = 0; i < _size; i++)
+            for (size_type i = 0; i < _size; ++i)
                 _alloc.construct(&_point[i], x[i]);
         }
 
@@ -108,10 +110,26 @@ namespace ft
         {
             return const_iterator(_point + _size);
         }
-        // reverse_iterator       rbegin();
-        // const_reverse_iterator rbegin() const;
-        // reverse_iterator       rend();
-        // const_reverse_iterator rend() const;
+
+        reverse_iterator rbegin()
+        {
+            return reverse_iterator(_point);
+        }
+
+        const_reverse_iterator rbegin() const
+        {
+            return const_reverse_iterator(_point);
+        }
+
+        reverse_iterator rend()
+        {
+            return reverse_iterator(_point + _size);
+        }
+
+        const_reverse_iterator rend() const
+        {
+            return const_reverse_iterator(_point + _size);
+        }
 
         // Capacity
         size_type size() const
@@ -234,7 +252,10 @@ namespace ft
             if (size > _capacity)
                 reserve(size);
             for (size_type i = 0; i < size; ++i)
-                _alloc.construct(&_point[i], size);
+            {
+                _alloc.construct(&_point[i], *first);
+                first++;
+            }
             _size = size;
         }
 
@@ -243,7 +264,7 @@ namespace ft
             this->clear();
             if (n > _capacity)
                 reserve(n);
-            for (size_type i = 0; i < n; i++)
+            for (size_type i = 0; i < n; ++i)
                 _alloc.construct(&_point[i], val);
             _size = n;
         }
