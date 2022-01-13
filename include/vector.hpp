@@ -69,15 +69,13 @@ namespace ft
             _capacity = _size;
             _point = _alloc.allocate(_capacity);
             for (size_type i = 0; i < _size; i++)
-                _alloc.construct(&_point[i], first++);
+                _alloc.construct(&_point[i], (*first)++);
         }
 
         vector(const vector& x)
+            : _alloc(x._alloc), _capacity(x._size), _size(x._size)
         {
-            _alloc = x._alloc;
             _point = _alloc.allocate(x._size);
-            _capacity = x._size;
-            _size = x._size;
             for (size_type i = 0; i < _size; ++i)
                 _alloc.construct(&_point[i], x[i]);
         }
@@ -88,6 +86,29 @@ namespace ft
             for (size_type i = 0; i < _size; i++)
                 _alloc.destroy(&_point[i]);
             _alloc.deallocate(_point, _capacity);
+        }
+
+        vector& operator=(vector const& src)
+        {
+            /*size_type src_size = src.size();
+
+            clear();
+            if (_capacity < src_size)
+                reserve(src_size);
+            for (size_t i = 0; i < src_size; ++i)
+                _alloc.construct(&_point[i], src[i]);
+            _size = src_size;
+            return *this;*/
+
+            if (this != &src)
+            {
+                this->clear();
+                this->reserve(src.size());
+
+                for (size_type i = 0; i < src.size(); ++i, ++_size)
+                    _alloc.construct(&_point[i], src[i]);
+            }
+            return (*this);
         }
 
         // Iterators
@@ -113,22 +134,22 @@ namespace ft
 
         reverse_iterator rbegin()
         {
-            return reverse_iterator(_point);
+            return reverse_iterator(end());
         }
 
         const_reverse_iterator rbegin() const
         {
-            return const_reverse_iterator(_point);
+            return const_reverse_iterator(end());
         }
 
         reverse_iterator rend()
         {
-            return reverse_iterator(_point + _size);
+            return reverse_iterator(begin());
         }
 
         const_reverse_iterator rend() const
         {
-            return const_reverse_iterator(_point + _size);
+            return const_reverse_iterator(begin());
         }
 
         // Capacity
@@ -174,7 +195,7 @@ namespace ft
         {
             if (n > max_size())
                 throw std::length_error("Vector (reserve)");
-            if (n <= _capacity)
+            else if (n <= _capacity)
                 return;
             else
             {
@@ -331,13 +352,13 @@ namespace ft
             else if (_size + n > _capacity)
                 reserve(_capacity * 2);
             _size = _size + n;
-            for (size_type i = _size; i != pos + n; i--)
+            for (size_type i = _size - 1; i != pos + n - 1; i--)
             {
                 _alloc.construct(&_point[i], _point[i - n]);
                 _alloc.destroy(&_point[i - n]);
             }
-            for (size_type i = pos; i != pos + n; ++i, ++first)
-                _alloc.construct(&_point[i], *first);
+            for (size_type i = pos; i != pos + n; ++i)
+                _alloc.construct(&_point[i], (*first)++);
         }
 
         iterator erase(iterator position)

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <iterator>
 
+#include "./util/enable_if.hpp"
 #include "./util/is_const.hpp"
 
 namespace ft
@@ -33,22 +34,37 @@ namespace ft
             _point = src;
         }
 
-        RandomAccessIterator& operator=(RandomAccessIterator const& src)
+        template < bool is_const >
+        RandomAccessIterator(const RandomAccessIterator< T, is_const >& src,
+                             typename ft::enable_if< !is_const, T >::type* = 0)
         {
-            _point = src._point;
+            _point = src.getPoint();
         }
 
         virtual ~RandomAccessIterator(){};
 
-        // Equivalence
-        bool operator==(RandomAccessIterator const& src)
+        pointer getPoint() const
         {
-            return (_point == src._point);
+            return _point;
         }
 
-        bool operator!=(RandomAccessIterator const& src)
+        RandomAccessIterator& operator=(RandomAccessIterator const& src)
         {
-            return (_point != src._point);
+            _point = src._point;
+            return (*this);
+        }
+
+        // Equivalence
+        template < bool Isconst >
+        bool operator==(RandomAccessIterator< T, Isconst > const& src)
+        {
+            return (_point == src.getPoint());
+        }
+
+        template < bool Isconst >
+        bool operator!=(RandomAccessIterator< T, Isconst > const& src)
+        {
+            return !(_point == src._point); //
         }
 
         // Dereference
@@ -84,7 +100,7 @@ namespace ft
         {
             RandomAccessIterator< T, Is_const > tmp(*this);
             _point++;
-            return (tmp);
+            return (*this);
         }
 
         RandomAccessIterator operator--(int)
@@ -106,42 +122,66 @@ namespace ft
             value_type* tmp = _point;
             return tmp -= n;
         }
-        // deuxieme - (pointeur?)
+
+        difference_type operator-(RandomAccessIterator const& src) const
+        {
+            return _point - src.getPoint();
+        }
 
         // Relationnal
-        bool operator<(RandomAccessIterator const& src)
+        template < bool Isconst >
+        bool operator<(RandomAccessIterator< T, Isconst > const& src)
         {
-            return (_point < src._point);
+            return (_point < src.getPoint());
         }
 
-        bool operator>(RandomAccessIterator const& src)
+        template < bool Isconst >
+        bool operator>(RandomAccessIterator< T, Isconst > const& src)
         {
-            return (_point > src._point);
+            return (_point > src.getPoint());
         }
 
-        bool operator<=(RandomAccessIterator const& src)
+        template < bool Isconst >
+        bool operator<=(RandomAccessIterator< T, Isconst > const& src)
         {
-            return (_point <= src._point);
+            return (_point <= src.getPoint());
         }
 
-        bool operator>=(RandomAccessIterator const& src)
+        template < bool Isconst >
+        bool operator>=(RandomAccessIterator< T, Isconst > const& src)
         {
-            return (_point >= src._point);
+            return (_point >= src.getPoint());
         }
 
         // Assignment arithmetic
         RandomAccessIterator& operator+=(difference_type value)
         {
-            this->p += value;
+            _point += value;
             return (*this);
         }
 
         RandomAccessIterator& operator-=(difference_type value)
         {
-            this->p -= value;
+            _point -= value;
             return (*this);
         }
     };
+
+    template < class T, bool Is_const >
+    RandomAccessIterator< T, Is_const >
+    operator+(typename RandomAccessIterator< T, Is_const >::difference_type n,
+              const RandomAccessIterator< T, Is_const >& rev_it)
+    {
+        return (RandomAccessIterator< T, Is_const >(rev_it + n));
+    }
+
+    template < class T, bool Is_const >
+    RandomAccessIterator< T, Is_const >
+    operator-(typename RandomAccessIterator< T, Is_const >::difference_type n,
+              const RandomAccessIterator< T, Is_const >& rev_it)
+    {
+        return (RandomAccessIterator< T, Is_const >(-n - rev_it));
+    }
 } // namespace ft
 
 #endif
