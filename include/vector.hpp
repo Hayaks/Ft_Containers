@@ -168,6 +168,7 @@ namespace ft
                 for (; _size < n; ++_size)
                     _alloc.construct(&_point[_size], val);
             }
+            _size = n;
         }
 
         size_type capacity() const
@@ -295,8 +296,7 @@ namespace ft
 
         iterator insert(iterator position, const value_type& val)
         {
-            /*
-            size_type pos = position - begin();
+            size_type pos = static_cast< size_type >(position - begin());
 
             if (_size == _capacity)
                 reserve(_capacity == 0 ? 1 : _capacity * 2);
@@ -308,48 +308,21 @@ namespace ft
             }
             _alloc.construct(&_point[pos], val);
             return iterator(&_point[pos]);
-            */
-            size_type pos = static_cast< size_type >(position - this->begin());
-            if (_size == _capacity)
-                reserve(_capacity == 0 ? 1 : _capacity * 2);
-
-            ++_size;
-            for (size_type i = _size - 1; i != pos; --i)
-            {
-                _alloc.construct(&_point[i], _point[i - 1]);
-                _alloc.destroy(&_point[i - 1]);
-            }
-            _alloc.construct(&_point[pos], val);
-            return iterator(&_point[pos]);
         }
 
         void insert(iterator position, size_type n, const value_type& val)
         {
-            /*
-            size_type pos = position - begin();
+            size_type pos = static_cast< size_type >(position - begin());
 
-            if (_size + n > _capacity)
-                reserve(_capacity == 0 ? n : _size + n);
-            _size = _size + n;
-            for (size_type i = _size - 1; i != pos + n; i--)
-            {
-                _alloc.construct(&_point[i], _point[i - n]);
-                _alloc.destroy(&_point[i - n]);
-            }
-            for (size_type i = pos; i != pos + n; ++i)
-                _alloc.construct(&_point[i], val);
-                */
-            size_type pos = static_cast< size_type >(position - this->begin());
             if (_size + n > _capacity)
                 reserve(_size + n);
-
-            _size += n;
-            for (size_type i = _size - 1; i != pos + n - 1; --i)
+            _size = _size + n;
+            for (size_type i = _size - 1; i != pos + n - 1; i--)
             {
                 _alloc.construct(&_point[i], _point[i - n]);
                 _alloc.destroy(&_point[i - n]);
             }
-            for (size_type i = pos; i != pos + n; ++i)
+            for (size_type i = pos; i != pos + n; i++)
                 _alloc.construct(&_point[i], val);
         }
 
@@ -359,11 +332,10 @@ namespace ft
                                         InputIterator >::type first,
                     InputIterator                             last)
         {
-            /*
             size_type pos = position - begin();
             size_type n = 0;
 
-            for (InputIterator it = first; it != last; ++it)
+            for (InputIterator it = first; it != last; it++)
                 n++;
             if (_size + n > _capacity * 2)
                 reserve(_size + n);
@@ -375,37 +347,13 @@ namespace ft
                 _alloc.construct(&_point[i], _point[i - n]);
                 _alloc.destroy(&_point[i - n]);
             }
-            for (size_type i = pos; i != pos + n; ++i)
-                _alloc.construct(&_point[i], (*first)++);
-                */
-
-            size_type pos = static_cast< size_type >(position - this->begin());
-            size_type n = 0;
-            for (InputIterator it = first; it != last; ++it, ++n)
-                ;
-
-            if (_size + n > _capacity)
-            {
-                if (_capacity * 2 < _size + n)
-                    reserve(_size + n);
-                else
-                    reserve(_capacity * 2);
-            }
-
-            _size += n;
-            for (size_type i = _size - 1; i != pos + n - 1; --i)
-            {
-                _alloc.construct(&_point[i], _point[i - n]);
-                _alloc.destroy(&_point[i - n]);
-            }
-
-            for (size_type i = pos; i != pos + n; ++i, ++first)
+            for (size_type i = pos; i != pos + n; i++, first++)
                 _alloc.construct(&_point[i], *first);
         }
 
         iterator erase(iterator position)
         {
-            size_type pos = position - begin();
+            size_type pos = static_cast< size_type >(position - begin());
 
             for (size_type i = pos; i < _size + 1; ++i)
             {
@@ -419,15 +367,15 @@ namespace ft
 
         iterator erase(iterator first, iterator last)
         {
-            size_type _begin = first - begin();
-            size_type _end = last - begin();
+            size_type _begin = static_cast< size_type >(first - begin());
+            size_type _end = static_cast< size_type >(last - begin());
 
             for (size_type i = _begin; i < _end; ++i)
                 _alloc.destroy(&_point[i]);
             for (size_type i = _end; i < _size; ++i)
-                _alloc.construct(&_point[i - (_begin - _end)], &_point[i]);
-            _size = _size - (_begin - _end);
-            return (first);
+                _alloc.construct(&_point[i - (_end - _begin)], _point[i]);
+            _size = _size - (_end - _begin);
+            return iterator(first);
         }
 
         void swap(vector& x)
