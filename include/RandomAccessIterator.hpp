@@ -2,6 +2,7 @@
 #define RANDOMACCESSITERATOR_HPP
 
 #include <cstddef>
+#include <iostream>
 #include <iterator>
 
 #include "./util/enable_if.hpp"
@@ -24,14 +25,12 @@ namespace ft
 
       public:
         // Constructor
-        RandomAccessIterator()
+        RandomAccessIterator() : _point(NULL)
         {
-            _point = NULL;
         }
 
-        RandomAccessIterator(const pointer src)
+        RandomAccessIterator(pointer src) : _point(src)
         {
-            _point = src;
         }
 
         template < bool is_const >
@@ -50,35 +49,35 @@ namespace ft
 
         RandomAccessIterator& operator=(RandomAccessIterator const& src)
         {
-            _point = src._point;
+            _point = src.getPoint();
             return (*this);
         }
 
         // Equivalence
         template < bool Isconst >
-        bool operator==(RandomAccessIterator< T, Isconst > const& src)
+        bool operator==(RandomAccessIterator< T, Isconst > const& src) const
         {
             return (_point == src.getPoint());
         }
 
         template < bool Isconst >
-        bool operator!=(RandomAccessIterator< T, Isconst > const& src)
+        bool operator!=(RandomAccessIterator< T, Isconst > const& src) const
         {
-            return !(_point == src._point); //
+            return !(*this == src); //
         }
 
         // Dereference
-        reference operator*()
+        reference operator*() const
         {
             return (*_point);
         }
 
-        pointer operator->()
+        pointer operator->() const
         {
             return (_point);
         }
 
-        pointer operator[](difference_type n)
+        reference operator[](difference_type n)
         {
             return (_point[n]);
         }
@@ -86,32 +85,32 @@ namespace ft
         // Increment/Decrement
         RandomAccessIterator& operator++(void)
         {
-            _point++;
+            ++_point;
             return (*this);
         }
 
         RandomAccessIterator& operator--(void)
         {
-            _point--;
+            --_point;
             return (*this);
         }
 
         RandomAccessIterator operator++(int)
         {
             RandomAccessIterator< T, Is_const > tmp(*this);
-            _point++;
-            return (*this);
+            ++_point;
+            return (tmp);
         }
 
         RandomAccessIterator operator--(int)
         {
             RandomAccessIterator< T, Is_const > tmp(*this);
-            _point--;
+            --_point;
             return (tmp);
         }
 
         // Arithmetic
-        RandomAccessIterator operator+(difference_type n)
+        RandomAccessIterator operator+(difference_type n) const
         {
             value_type* tmp = _point;
             return tmp += n;
@@ -130,37 +129,37 @@ namespace ft
 
         // Relationnal
         template < bool Isconst >
-        bool operator<(RandomAccessIterator< T, Isconst > const& src)
+        bool operator<(RandomAccessIterator< T, Isconst > const& src) const
         {
             return (_point < src.getPoint());
         }
 
         template < bool Isconst >
-        bool operator>(RandomAccessIterator< T, Isconst > const& src)
+        bool operator>(RandomAccessIterator< T, Isconst > const& src) const
         {
             return (_point > src.getPoint());
         }
 
         template < bool Isconst >
-        bool operator<=(RandomAccessIterator< T, Isconst > const& src)
+        bool operator<=(RandomAccessIterator< T, Isconst > const& src) const
         {
             return (_point <= src.getPoint());
         }
 
         template < bool Isconst >
-        bool operator>=(RandomAccessIterator< T, Isconst > const& src)
+        bool operator>=(RandomAccessIterator< T, Isconst > const& src) const
         {
             return (_point >= src.getPoint());
         }
 
         // Assignment arithmetic
-        RandomAccessIterator& operator+=(difference_type value)
+        RandomAccessIterator operator+=(difference_type value)
         {
             _point += value;
             return (*this);
         }
 
-        RandomAccessIterator& operator-=(difference_type value)
+        RandomAccessIterator operator-=(difference_type value)
         {
             _point -= value;
             return (*this);

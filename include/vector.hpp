@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "./util/enable_if.hpp"
+#include "./util/equal.hpp"
 #include "./util/is_integral.hpp"
 #include "util/lexicographical_compare.hpp"
 
@@ -410,12 +411,8 @@ namespace ft
     bool operator==(const vector< T, Alloc >& lhs,
                     const vector< T, Alloc >& rhs)
     {
-        if (lhs.size() != rhs.size())
-            return (false);
-        for (size_t i = 0; i < lhs.size(); i++)
-            if (lhs[i] != rhs[i])
-                return (false);
-        return (true);
+        return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()) &&
+                lhs.size() == rhs.size()); // je sais pas
     }
 
     template < class T, class Alloc >
@@ -428,8 +425,11 @@ namespace ft
     template < class T, class Alloc >
     bool operator<(const vector< T, Alloc >& lhs, const vector< T, Alloc >& rhs)
     {
-        return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                           rhs.end());
+        if (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                        rhs.end()))
+            return true;
+        else
+            return false; // Verif
     }
 
     template < class T, class Alloc >

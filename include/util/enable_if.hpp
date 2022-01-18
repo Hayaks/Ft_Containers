@@ -2,7 +2,7 @@
 #define ENABLE_IF_HPP
 namespace ft
 {
-    template < bool B, class T = void >
+    template < bool B, class T >
     struct enable_if
     {
     };
