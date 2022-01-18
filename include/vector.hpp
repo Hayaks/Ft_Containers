@@ -425,11 +425,8 @@ namespace ft
     template < class T, class Alloc >
     bool operator<(const vector< T, Alloc >& lhs, const vector< T, Alloc >& rhs)
     {
-        if (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
-                                        rhs.end()))
-            return true;
-        else
-            return false; // Verif
+        return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(),
+                                            rhs.end()));
     }
 
     template < class T, class Alloc >
