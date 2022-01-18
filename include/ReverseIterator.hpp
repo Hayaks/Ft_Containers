@@ -84,7 +84,7 @@ namespace ft
 
         difference_type operator-(ReverseIterator const& src) const
         {
-            return _it - src.base();
+            return src.base() - _it;
         }
 
         // Increment and Decrement
@@ -196,13 +196,13 @@ namespace ft
         return ReverseIterator< Iterator >(rev_it + n);
     }
 
-    /*template < class Iterator >
+    template < class Iterator >
     typename ReverseIterator< Iterator >::difference_type
     operator-(const ReverseIterator< Iterator >& lhs,
               const ReverseIterator< Iterator >& rhs)
     {
         return (rhs.base() - lhs.base());
-    }*/
+    }
 } // namespace ft
 
 #endif
