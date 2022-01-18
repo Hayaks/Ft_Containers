@@ -26,16 +26,19 @@ namespace ft
 
       public:
         // Constructors
-        ReverseIterator() : _it(NULL)
+        ReverseIterator() : _it(Iterator())
         {
         }
+
         explicit ReverseIterator(iterator_type it) : _it(it)
         {
         }
+
         ReverseIterator(ReverseIterator< iterator_type >& rev_it)
             : _it(rev_it.base())
         {
         }
+
         template < class T >
         ReverseIterator(const ReverseIterator< T >& rev_it) : _it(rev_it.base())
         {
@@ -77,6 +80,11 @@ namespace ft
         ReverseIterator operator-(difference_type n) const
         {
             return ReverseIterator(_it + n);
+        }
+
+        difference_type operator-(ReverseIterator const& src) const
+        {
+            return _it - src.base();
         }
 
         // Increment and Decrement
@@ -188,13 +196,13 @@ namespace ft
         return ReverseIterator< Iterator >(rev_it + n);
     }
 
-    template < class Iterator, class ConstIterator >
+    /*template < class Iterator >
     typename ReverseIterator< Iterator >::difference_type
-    operator-(const ReverseIterator< Iterator >&      lhs,
-              const ReverseIterator< ConstIterator >& rhs)
+    operator-(const ReverseIterator< Iterator >& lhs,
+              const ReverseIterator< Iterator >& rhs)
     {
         return (rhs.base() - lhs.base());
-    }
+    }*/
 } // namespace ft
 
 #endif

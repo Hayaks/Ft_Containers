@@ -116,7 +116,7 @@ namespace ft
             return tmp += n;
         }
 
-        RandomAccessIterator operator-(difference_type n)
+        RandomAccessIterator operator-(difference_type n) const
         {
             value_type* tmp = _point;
             return tmp -= n;
