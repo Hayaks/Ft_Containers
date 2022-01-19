@@ -356,13 +356,13 @@ namespace ft
         {
             size_type pos = static_cast< size_type >(position - begin());
 
-            for (size_type i = pos; i < _size + 1; ++i)
+            for (size_type i = pos; i != _size; ++i)
             {
                 _alloc.destroy(&_point[i]);
-                _alloc.construct(&_point[i], _point[i + 1]);
+                if (i != _size - 1)
+                    _alloc.construct(&_point[i], _point[i + 1]);
             }
-            _alloc.destroy(&_point[_size - 1]);
-            _size--;
+            --_size;
             return iterator(position);
         }
 
@@ -374,7 +374,11 @@ namespace ft
             for (size_type i = _begin; i < _end; ++i)
                 _alloc.destroy(&_point[i]);
             for (size_type i = _end; i < _size; ++i)
+            {
                 _alloc.construct(&_point[i - (_end - _begin)], _point[i]);
+                _alloc.destroy(&_point[i]);
+            }
+
             _size = _size - (_end - _begin);
             return iterator(first);
         }
