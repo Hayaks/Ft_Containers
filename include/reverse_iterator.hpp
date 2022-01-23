@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include "./IteratorTraits.hpp"
+#include "./iterator_traits.hpp"
 
 namespace ft
 {

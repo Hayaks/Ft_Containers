@@ -1,4 +1,6 @@
 #include "../include/container.hpp"
+#include <algorithm>
+#include <string>
 
 void ft_vector()
 {
@@ -8,7 +10,12 @@ void ft_vector()
     // FT::vector< int > vec_int2(vec_int1);
 }
 
+void ft_stack()
+{
+}
+
 int main()
 {
     ft_vector();
+    ft_stack();
 }

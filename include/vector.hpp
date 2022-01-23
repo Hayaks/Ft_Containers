@@ -1,8 +1,6 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "RandomAccessIterator.hpp"
-#include "ReverseIterator.hpp"
 #include <cstddef>
 #include <iostream>
 #include <memory>
@@ -12,6 +10,9 @@
 #include "./util/equal.hpp"
 #include "./util/is_integral.hpp"
 #include "util/lexicographical_compare.hpp"
+
+#include "random_access_iterator.hpp"
+#include "reverse_iterator.hpp"
 
 namespace ft
 {
