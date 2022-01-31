@@ -87,11 +87,6 @@ namespace ft
             return (&(_point->value));
         }
 
-        reference operator[](difference_type n)
-        {
-            return (_point[n]);
-        }
-
         // Increment/Decrement
         Map_iterator& operator++(void)
         {
