@@ -1,4 +1,6 @@
 #include "../include/container.hpp"
+#include "../include/map.hpp"
+#include "../include/stack.hpp"
 #include <algorithm>
 #include <string>
 

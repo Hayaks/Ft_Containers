@@ -28,6 +28,24 @@ namespace ft
             Node*      parent;
             Node*      left;
             Node*      right;
+
+            Node* childMin()
+            {
+                Node* tmp = this;
+
+                while (tmp->left)
+                    tmp = tmp->left;
+                return (tmp);
+            }
+
+            Node* childMax()
+            {
+                Node* tmp = this;
+
+                while (tmp->right)
+                    tmp = tmp->right;
+                return (tmp);
+            }
         };
 
         class value_compare
@@ -93,7 +111,7 @@ namespace ft
             return (_end);
         }
 
-        Node* getMin() const
+        Node* getBegin() const
         {
             Node* tmp = _point;
             while (tmp->left)
@@ -133,6 +151,22 @@ namespace ft
         value_compare value_comp(void) const
         {
             return value_compare(_comp);
+        }
+
+        // Operations
+        Node* find(const key_type& k) const
+        {
+            Node* tmp = _point;
+            while (tmp)
+            {
+                if (_comp(k, tmp->value.first))
+                    tmp = tmp->left;
+                else if (_comp(tmp->value.first, k))
+                    tmp = tmp->right;
+                else
+                    return tmp;
+            }
+            return NULL;
         }
 
         // Allocator

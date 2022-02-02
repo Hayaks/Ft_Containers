@@ -64,12 +64,12 @@ namespace ft
         // Iterators
         iterator begin()
         {
-            return iterator(_tree->getMin());
+            return iterator(_tree->getBegin());
         }
 
         const_iterator begin(void) const
         {
-            return const_iterator(_tree->getMin());
+            return const_iterator(_tree->getBegin());
         }
 
         iterator end()
@@ -167,6 +167,72 @@ namespace ft
         }
 
         // Operations
+        iterator find(const key_type& k)
+        {
+            if (_tree.size() == 0) // Verif
+                return end();
+            return (iterator(_tree.find(k)));
+        }
+
+        const_iterator find(const key_type& k) const
+        {
+            if (_tree.size() == 0) // Verif
+                return end();
+            return (const_iterator(_tree.find(k)));
+        }
+
+        size_type count(const key_type& k) const
+        {
+            if (find(k) == end())
+                return (0);
+            return (1);
+        }
+
+        iterator lower_bound(const key_type& k)
+        {
+            for (iterator it = begin(); it != end(); it++)
+                if (_tree.key_comp()(it->first, k))
+                    return it;
+            return end();
+        }
+
+        iterator lower_bound(const key_type& k) const
+        {
+            for (iterator it = begin(); it != end(); it++)
+                if (_tree.key_comp()(it->first, k))
+                    return it;
+            return end();
+        }
+
+        iterator upper_bound(const key_type& k)
+        {
+            for (iterator it = begin(); it != end(); it++)
+                if (_tree.key_comp()(k, it->first))
+                    return it;
+            return end();
+        }
+
+        iterator upper_bound(const key_type& k) const
+        {
+            for (iterator it = begin(); it != end(); it++)
+                if (_tree.key_comp()(k, it->first))
+                    return it;
+            return end();
+        }
+
+        pair< const_iterator, const_iterator >
+        equal_range(const key_type& k) const
+        {
+            ft::pair< const_iterator, const_iterator > ret(lower_bound(k),
+                                                           upper_bound(k));
+            return ret;
+        }
+
+        pair< iterator, iterator > equal_range(const key_type& k)
+        {
+            ft::pair< iterator, iterator > ret(lower_bound(k), upper_bound(k));
+            return ret;
+        }
 
         // Allocator
         Alloc get_allocator() const

@@ -90,22 +90,68 @@ namespace ft
         // Increment/Decrement
         Map_iterator& operator++(void)
         {
-            ++_point;
+            if (_point->right)
+            {
+                _point = _point->right->childMin();
+                return (*this);
+            }
+            else if (_point->parent)
+            {
+                Node* tmp_parent = _point->parent;
+                Node* tmp = _point;
+                while (tmp_parent && tmp_parent->right == tmp)
+                {
+                    tmp_parent = tmp_parent->parent;
+                    tmp = tmp->parent;
+                }
+                if (tmp_parent)
+                {
+                    _point = tmp_parent;
+                    return (*this);
+                }
+            }
+            _point = _end;
             return (*this);
         }
 
         Map_iterator& operator--(void)
         {
-            --_point;
+            if (_point->left)
+            {
+                _point = _point->left->childMax();
+                return (*this);
+            }
+            else if (_point->parent)
+            {
+                Node* tmp_parent = _point->parent;
+                Node* tmp = _point;
+                while (tmp_parent && tmp_parent->left == tmp)
+                {
+                    tmp_parent = tmp_parent->parent;
+                    tmp = tmp->parent;
+                }
+                if (tmp_parent)
+                {
+                    _point = tmp_parent;
+                    return (*this);
+                }
+            }
+            _point = _end;
             return (*this);
         }
 
         Map_iterator operator++(int)
         {
+            Map_iterator tmp = *this;
+            ++*this;
+            return (tmp);
         }
 
         Map_iterator operator--(int)
         {
+            Map_iterator tmp = *this;
+            --*this;
+            return (tmp);
         }
 
         Node* search_end()
