@@ -78,26 +78,27 @@ namespace ft
       public:
         Tree(const key_compare&    comp = key_compare(),
              const allocator_type& alloc = allocator_type())
-            : _comp(comp), _alloc(alloc), _size(0)
+            : _comp(comp), _alloc(alloc), _point(NULL), _size(0)
         {
-            _point = _alloc.allocate(1);
-            _point->parent = NULL;
-            _point->left = NULL;
-            _point->right = NULL;
-            _end = _point;
+            _end = _alloc.allocate(1);
+            _end->parent = NULL;
+            _end->left = NULL;
+            _end->right = NULL;
             // Peut etre le contraire. Allouer a end et non point
         }
 
         // Constructor
         Tree(const Tree& x)
         {
-            *this->x;
+            *this = x;
         }
 
         // Destructor
         ~Tree()
         {
-            clear();
+            if (_point)
+                clear(_point);
+            _alloc.deallocate(_end, 1);
         }
 
         // Iterators
@@ -117,6 +118,31 @@ namespace ft
             while (tmp->left)
                 tmp = tmp->left;
             return tmp;
+        }
+
+        // Utils
+        void updateEnd()
+        {
+            if (_point)
+                _end->parent = _point->childMax();
+            else
+                _end->parent = NULL;
+            _end->left = NULL;
+            _end->right = NULL;
+        }
+
+        int sizeHeight(Node* node, int nb = 0) const
+        {
+            int nb_bis = 0;
+
+            if (node)
+            {
+                nb++;
+                nb_bis = nb;
+                nb = sizeHeight(node, nb);
+                nb_bis = sizeHeight(node, nb_bis);
+            }
+            return (nb = nb > nb_bis ? nb : nb_bis);
         }
 
         // Capacity
@@ -140,6 +166,65 @@ namespace ft
         size_type max_size() const
         {
             return (_alloc.max_size());
+        }
+
+        // Modifiers
+        void firstNode(const value_type& val)
+        {
+            _point = _alloc.allocate(1);
+            _alloc.construct(&_point->value, val);
+            _point->parent = NULL;
+            _point->left = NULL;
+            _point->right = NULL;
+        }
+
+        void insertNode(Node* parent, value_type val)
+        {
+            Node* node;
+
+            node = _alloc.allocate(1);
+            _alloc.construct(&node->value, val);
+            node->parent = parent;
+            node->left = NULL;
+            node->right = NULL;
+        }
+
+        void insert(Node* node, const value_type& val)
+        {
+            if (_point == NULL)
+            {
+                firstNode(val);
+                return;
+            }
+            else if (_point != NULL && !node)
+            {
+                insertNode(node->parent, val);
+                return;
+            }
+            if (key_compare()(val->value.first, node->value.first))
+                insert(node->left, val);
+            else if (key_compare()(val->value.first, node->value.first))
+                insert(node->right, val);
+            else
+                return;
+            balanceInsert(node, val.first);
+            updateEnd();
+        }
+
+        void erase(Node* node, const key_type key)
+        {
+            updateEnd();
+        }
+
+        void clear(Node* node)
+        {
+            if (node)
+            {
+                clear(node->left);
+                clear(node->right);
+                this->_allocValue.destroy(&node->value);
+                this->_allocNode.deallocate(node, 1);
+            }
         }
 
         // Observers
@@ -173,6 +258,109 @@ namespace ft
         Alloc getAlloc() const
         {
             return _alloc;
+        }
+
+        // Balancing
+        void rotateLeft(Node* node)
+        {
+            Node* new_parent = node->right;
+            Node* mid_node = new_parent->left;
+
+            new_parent->parent = node->parent;
+            new_parent->left = node;
+            node->parent = new_parent;
+            node->right = mid_node;
+            if (mid_node)
+                mid_node->parent = node;
+        }
+
+        void rotateRight(Node* node)
+        {
+            Node* new_parent = node->left;
+            Node* mid_node = new_parent->right;
+
+            new_parent->parent = node->parent;
+            new_parent->right = node;
+            node->parent = new_parent;
+            node->left = mid_node;
+            if (mid_node)
+                mid_node->parent = node;
+        }
+
+        int getBalance(Node* node)
+        {
+            if (!node)
+                return 0;
+            return (sizeHeight(node->left) - sizeHeight(node->right));
+        }
+
+        void balanceInsert(Node* node, const key_type key)
+        {
+            int nb = getBalance(node);
+
+            // Left left case
+            if (nb < -1 && _comp(key, node->left->value.first))
+            {
+                rotateRight(node);
+                return;
+            }
+            // Right right case
+            if (nb > 1 && _comp(node->left->value.first, key))
+            {
+                rotateLeft(node);
+                return;
+            }
+            // Left right case
+            if (nb < -1 && _comp(node->left->value.first, key))
+            {
+                rotateLeft(node->left);
+                rotateRight(node);
+                return;
+            }
+            // Right left case
+            if (nb > 1 && _comp(key, node->left->value.first))
+            {
+                rotateRight(node->right);
+                rotateLeft(node);
+                return;
+            }
+            return;
+        }
+
+        void balanceDelete(Node* node)
+        {
+            if (!node)
+                return;
+
+            int nb = getBalance(node);
+
+            // Left left case
+            if (nb < -1 && balanceFactor(node->left) <= 0)
+            {
+                rotateRight(node);
+                return;
+            }
+            // Right right case
+            if (nb > 1 && balanceFactor(node->right) >= 0)
+            {
+                rotateLeft(node);
+                return;
+            }
+            // Left right case
+            if (nb < -1 && balanceFactor(node->left) > 0)
+            {
+                rotateLeft(node->left);
+                rotateRight(node);
+                return;
+            }
+            // Right left case
+            if (nb > 1 && balanceFactor(node->right) < 0)
+            {
+                rotateRight(node->right);
+                rotateLeft(node);
+                return;
+            }
+            return;
         }
     };
 } // namespace ft

@@ -127,22 +127,42 @@ namespace ft
         // Modifiers
         pair< iterator, bool > insert(const value_type& val)
         {
+            size_type              nb_element = size();
+            pair< iterator, bool > ret;
+
+            _tree.insert(_tree->_point, val);
+            ret.first = find(val.first);
+            ret.second = (nb_element != size());
+            return (ret);
         }
 
         iterator insert(iterator position, const value_type& val)
         {
+            (void)position;
+            return insert(val).first;
         }
 
         template < class InputIterator >
         void insert(InputIterator first, InputIterator last)
         {
+            for (InputIterator it = first; it != last; ++it)
+                _tree.insert(_tree->_point, *it);
         }
 
-        iterator erase(iterator position)
+        void erase(iterator position)
         {
+            erase(*position.first);
         }
 
-        iterator erase(iterator first, iterator last)
+        size_type erase(const key_type& k)
+        {
+            size_type nb_element = size();
+
+            _tree.erase(_tree->point, k);
+            return (nb_element != size());
+        }
+
+        void erase(iterator first, iterator last)
         {
         }
 
@@ -152,7 +172,8 @@ namespace ft
 
         void clear()
         {
-            erase(begin(), end());
+            if (_tree.getPoint())
+                _tree.clear(_tree.getPoint());
         }
 
         // Observers
