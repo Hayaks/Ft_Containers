@@ -2,6 +2,7 @@
 #define MAP_ITERATOR_HPP
 
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <iterator>
 
@@ -20,7 +21,7 @@ namespace ft
         typedef value_type*                     pointer;
         typedef value_type&                     reference;
         typedef std::bidirectional_iterator_tag iterator_category;
-        typedef typename N::Node                Node;
+        typedef N                               Node;
 
       protected:
         Node* _point;
@@ -40,10 +41,6 @@ namespace ft
         Map_iterator(Node* point) : _point(point), _end(NULL)
         {
             _end = search_end();
-        }
-
-        Map_iterator(Node* point, Node* end) : _point(point), _end(end)
-        {
         }
 
         virtual ~Map_iterator(){};

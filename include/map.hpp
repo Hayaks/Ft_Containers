@@ -14,26 +14,25 @@ namespace ft
     class map
     {
       public:
-        typedef Key                                             key_type;
-        typedef T                                               mapped_type;
-        typedef pair< const key_type, mapped_type >             value_type;
-        typedef Compare                                         key_compare;
-        typedef Alloc                                           allocator_type;
-        typedef Tree< value_type, key_compare, allocator_type > tree;
-        typedef Tree< const value_type, key_compare, allocator_type >
-                                                  const_tree;
-        typedef typename tree::Node               node;
-        typedef typename tree::value_compare      value_compare;
-        typedef typename tree::reference          reference;
-        typedef typename tree::const_reference    const_reference;
-        typedef typename tree::pointer            pointer;
-        typedef typename tree::const_pointer      const_pointer;
-        typedef Map_iterator< tree, node >        iterator;
-        typedef Map_iterator< const_tree, node >  const_iterator;
-        typedef ReverseIterator< iterator >       reverse_iterator;
-        typedef ReverseIterator< const_iterator > const_reverse_iterator;
-        typedef std::ptrdiff_t                    difference_type;
-        typedef size_t                            size_type;
+        typedef Key                                      key_type;
+        typedef T                                        mapped_type;
+        typedef pair< const key_type, mapped_type >      value_type;
+        typedef Compare                                  key_compare;
+        typedef Alloc                                    allocator_type;
+        typedef Tree< value_type, Compare, Alloc >       tree;
+        typedef Tree< const value_type, Compare, Alloc > const_tree;
+        typedef typename tree::Node                      node;
+        typedef typename tree::value_compare             value_compare;
+        typedef typename tree::reference                 reference;
+        typedef typename tree::const_reference           const_reference;
+        typedef typename tree::pointer                   pointer;
+        typedef typename tree::const_pointer             const_pointer;
+        typedef Map_iterator< tree, node >               iterator;
+        typedef Map_iterator< const_tree, node >         const_iterator;
+        typedef ReverseIterator< iterator >              reverse_iterator;
+        typedef ReverseIterator< const_iterator >        const_reverse_iterator;
+        typedef std::ptrdiff_t                           difference_type;
+        typedef size_t                                   size_type;
         // size_type _size;
         tree _tree;
 
@@ -64,12 +63,12 @@ namespace ft
         // Iterators
         iterator begin()
         {
-            return iterator(_tree->getBegin());
+            return iterator(_tree.getBegin());
         }
 
-        const_iterator begin(void) const
+        const_iterator begin() const
         {
-            return const_iterator(_tree->getBegin());
+            return const_iterator(_tree.getBegin());
         }
 
         iterator end()
@@ -131,6 +130,7 @@ namespace ft
             pair< iterator, bool > ret;
 
             _tree.insert(_tree->_point, val);
+            _tree.updateEnd();
             ret.first = find(val.first);
             ret.second = (nb_element != size());
             return (ret);
@@ -146,12 +146,16 @@ namespace ft
         void insert(InputIterator first, InputIterator last)
         {
             for (InputIterator it = first; it != last; ++it)
-                _tree.insert(_tree->_point, *it);
+            {
+                _tree.insert(_tree.getPoint(), *it);
+                _tree.updateEnd();
+            }
         }
 
         void erase(iterator position)
         {
             erase(*position.first);
+            _tree.updateEnd();
         }
 
         size_type erase(const key_type& k)
@@ -159,15 +163,25 @@ namespace ft
             size_type nb_element = size();
 
             _tree.erase(_tree->point, k);
+            _tree.updateEnd();
             return (nb_element != size());
         }
 
         void erase(iterator first, iterator last)
-        {
+        { //
+            iterator tmp;
+            while (first != last)
+            {
+                tmp = first;
+                ++first;
+                this->erase(tmp);
+                _tree.updateEnd();
+            }
         }
 
         void swap(map& x)
         {
+            _tree.swap(x._tree);
         }
 
         void clear()
@@ -179,12 +193,12 @@ namespace ft
         // Observers
         key_compare key_comp() const
         {
-            return this->_tree.key_comp();
+            return _tree.key_comp();
         }
 
         value_compare value_comp() const
         {
-            return this->_tree.value_comp();
+            return _tree.value_comp();
         }
 
         // Operations
@@ -212,15 +226,15 @@ namespace ft
         iterator lower_bound(const key_type& k)
         {
             for (iterator it = begin(); it != end(); it++)
-                if (_tree.key_comp()(it->first, k))
+                if (!key_comp()(it->first, k))
                     return it;
             return end();
         }
 
-        iterator lower_bound(const key_type& k) const
+        const_iterator lower_bound(const key_type& k) const
         {
-            for (iterator it = begin(); it != end(); it++)
-                if (_tree.key_comp()(it->first, k))
+            for (const_iterator it = begin(); it != end(); it++)
+                if (!key_comp()(it->first, k))
                     return it;
             return end();
         }
@@ -228,15 +242,15 @@ namespace ft
         iterator upper_bound(const key_type& k)
         {
             for (iterator it = begin(); it != end(); it++)
-                if (_tree.key_comp()(k, it->first))
+                if (key_comp()(k, it->first))
                     return it;
             return end();
         }
 
-        iterator upper_bound(const key_type& k) const
+        const_iterator upper_bound(const key_type& k) const
         {
-            for (iterator it = begin(); it != end(); it++)
-                if (_tree.key_comp()(k, it->first))
+            for (const_iterator it = begin(); it != end(); it++)
+                if (key_comp()(k, it->first))
                     return it;
             return end();
         }

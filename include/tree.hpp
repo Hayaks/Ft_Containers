@@ -1,7 +1,9 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
+#include "./util/pair.hpp"
 #include "iostream"
+#include <iterator>
 
 namespace ft
 {
@@ -69,22 +71,22 @@ namespace ft
         };
 
       private:
-        allocator_type _alloc;
-        key_compare    _comp;
-        Node*          _point;
-        Node*          _end;
-        size_type      _size;
+        allocator_type         _alloc;
+        std::allocator< Node > _allocNode;
+        key_compare            _comp;
+        Node*                  _point;
+        Node*                  _end;
+        size_type              _size;
 
       public:
         Tree(const key_compare&    comp = key_compare(),
              const allocator_type& alloc = allocator_type())
-            : _comp(comp), _alloc(alloc), _point(NULL), _size(0)
+            : _alloc(alloc), _comp(comp), _point(NULL), _size(0)
         {
-            _end = _alloc.allocate(1);
+            _end = _allocNode.allocate(1);
             _end->parent = NULL;
             _end->left = NULL;
             _end->right = NULL;
-            // Peut etre le contraire. Allouer a end et non point
         }
 
         // Constructor
@@ -98,7 +100,7 @@ namespace ft
         {
             if (_point)
                 clear(_point);
-            _alloc.deallocate(_end, 1);
+            _allocNode.deallocate(_end, 1);
         }
 
         // Iterators
@@ -139,10 +141,11 @@ namespace ft
             {
                 nb++;
                 nb_bis = nb;
-                nb = sizeHeight(node, nb);
-                nb_bis = sizeHeight(node, nb_bis);
+                nb = sizeHeight(node->right, nb);
+                nb_bis = sizeHeight(node->left, nb_bis);
+                nb = nb > nb_bis ? nb : nb_bis; //
             }
-            return (nb = nb > nb_bis ? nb : nb_bis);
+            return (nb);
         }
 
         // Capacity
@@ -165,13 +168,26 @@ namespace ft
 
         size_type max_size() const
         {
-            return (_alloc.max_size());
+            return (_allocNode.max_size());
+        }
+
+        // Element access
+        mapped_type& operator[](const key_type& k)
+        { //
+            Node* node = this->find(k);
+            if (node)
+                return node->value.second;
+            _point = insertNode(
+                _point,
+                ft::make_pair< const key_type, mapped_type >(k, mapped_type()));
+            updateEnd();
+            return (*this)[k];
         }
 
         // Modifiers
         void firstNode(const value_type& val)
         {
-            _point = _alloc.allocate(1);
+            _point = _allocNode.allocate(1);
             _alloc.construct(&_point->value, val);
             _point->parent = NULL;
             _point->left = NULL;
@@ -182,38 +198,91 @@ namespace ft
         {
             Node* node;
 
-            node = _alloc.allocate(1);
+            node = _allocNode.allocate(1);
             _alloc.construct(&node->value, val);
             node->parent = parent;
             node->left = NULL;
             node->right = NULL;
+            if (_comp(parent->value.first, node->value.first))
+                parent->right = node;
+            else if (_comp(node->value.first, parent->value.first))
+                parent->left = node;
         }
 
-        void insert(Node* node, const value_type& val)
+        void insert(Node* node, const value_type& val, Node* parent = 0)
         {
             if (_point == NULL)
             {
                 firstNode(val);
                 return;
             }
-            else if (_point != NULL && !node)
+            else if (!node)
             {
-                insertNode(node->parent, val);
+                insertNode(parent, val);
                 return;
             }
-            if (key_compare()(val->value.first, node->value.first))
-                insert(node->left, val);
-            else if (key_compare()(val->value.first, node->value.first))
-                insert(node->right, val);
+            if (_comp(val.first, node->value.first))
+                insert(node->left, val, node);
+            else if (_comp(node->value.first, val.first))
+                insert(node->right, val, node);
             else
                 return;
             balanceInsert(node, val.first);
-            updateEnd();
+            // updateEnd();
+        }
+
+        void endBranch(Node* node)
+        {
+            Node* tmp = node;
+            if (node->left)
+                node = node->left;
+            else
+                node->right;
+            if (node)
+                node->parent = tmp->parent;
+            _alloc.destroy(&tmp->value);
+            _allocNode.deallocate(tmp, 1);
+        }
+
+        void midBranch(Node* node)
+        { //
+            Node* tmp = node->right->min();
+
+            // switch them
+            if (tmp != node->right)
+            {
+                tmp->right = node->right;
+                node->right->parent = tmp;
+            }
+            if (tmp != node->left)
+            {
+                tmp->left = node->left;
+                node->left->parent = tmp;
+            }
+            tmp->parent->left = 0;
+            tmp->parent = node->parent;
+            _alloc.destroy(&node->value);
+            _allocNode.deallocate(node, 1);
+            node = tmp;
         }
 
         void erase(Node* node, const key_type key)
         {
-            updateEnd();
+            if (!node)
+                return;
+            if (_comp(key, node->value.first))
+                node->left = erase(node->left, key);
+            else if (_comp(node->value.first, key))
+                node->right = erase(node->right, key);
+            else
+            {
+                if (!node->left || !node->right)
+                    endBranch(node);
+                else
+                    midBranch(node);
+            }
+            balanceErase(node);
+            // updateEnd();
         }
 
         void clear(Node* node)
@@ -222,18 +291,25 @@ namespace ft
             {
                 clear(node->left);
                 clear(node->right);
-                this->_allocValue.destroy(&node->value);
+                this->_alloc.destroy(&node->value);
                 this->_allocNode.deallocate(node, 1);
             }
         }
 
-        // Observers
-        key_compare key_comp(void) const
+        void swap(Tree& x)
         {
-            return _comp;
+            Node* tmp = _point;
+            _point = x._point;
+            x._point = tmp;
         }
 
-        value_compare value_comp(void) const
+        // Observers
+        key_compare key_comp() const
+        {
+            return (_comp);
+        }
+
+        value_compare value_comp() const
         {
             return value_compare(_comp);
         }
@@ -296,38 +372,44 @@ namespace ft
 
         void balanceInsert(Node* node, const key_type key)
         {
+            if (!node)
+                return;
             int nb = getBalance(node);
 
             // Left left case
-            if (nb < -1 && _comp(key, node->left->value.first))
-            {
-                rotateRight(node);
-                return;
-            }
+            if (node->left)
+                if (nb < -1 && _comp(key, node->left->value.first))
+                {
+                    rotateRight(node);
+                    return;
+                }
             // Right right case
-            if (nb > 1 && _comp(node->left->value.first, key))
-            {
-                rotateLeft(node);
-                return;
-            }
+            if (node->right)
+                if (nb > 1 && _comp(node->right->value.first, key))
+                {
+                    rotateLeft(node);
+                    return;
+                }
             // Left right case
-            if (nb < -1 && _comp(node->left->value.first, key))
-            {
-                rotateLeft(node->left);
-                rotateRight(node);
-                return;
-            }
+            if (node->left)
+                if (nb < -1 && _comp(node->left->value.first, key))
+                {
+                    rotateLeft(node->left);
+                    rotateRight(node);
+                    return;
+                }
             // Right left case
-            if (nb > 1 && _comp(key, node->left->value.first))
-            {
-                rotateRight(node->right);
-                rotateLeft(node);
-                return;
-            }
+            if (node->right)
+                if (nb > 1 && _comp(key, node->right->value.first))
+                {
+                    rotateRight(node->right);
+                    rotateLeft(node);
+                    return;
+                }
             return;
         }
 
-        void balanceDelete(Node* node)
+        void balanceErase(Node* node)
         {
             if (!node)
                 return;
