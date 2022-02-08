@@ -30,6 +30,7 @@ namespace ft
             Node*      parent;
             Node*      left;
             Node*      right;
+            Node*      pointEnd;
 
             Node* childMin()
             {
@@ -46,6 +47,15 @@ namespace ft
 
                 while (tmp->right)
                     tmp = tmp->right;
+                return (tmp);
+            }
+
+            Node* parentMax()
+            {
+                Node* tmp = this;
+
+                while (tmp->parent)
+                    tmp = tmp->parent;
                 return (tmp);
             }
         };
@@ -87,6 +97,7 @@ namespace ft
             _end->parent = NULL;
             _end->left = NULL;
             _end->right = NULL;
+            _end->pointEnd = NULL;
         }
 
         // Constructor
@@ -131,6 +142,7 @@ namespace ft
                 _end->parent = NULL;
             _end->left = NULL;
             _end->right = NULL;
+            _end->pointEnd = NULL;
         }
 
         int sizeHeight(Node* node, int nb = 0) const
@@ -192,6 +204,7 @@ namespace ft
             _point->parent = NULL;
             _point->left = NULL;
             _point->right = NULL;
+            _point->pointEnd = _end;
         }
 
         void insertNode(Node* parent, value_type val)
@@ -203,6 +216,7 @@ namespace ft
             node->parent = parent;
             node->left = NULL;
             node->right = NULL;
+            node->pointEnd = _end;
             if (_comp(parent->value.first, node->value.first))
                 parent->right = node;
             else if (_comp(node->value.first, parent->value.first))

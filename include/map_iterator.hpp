@@ -87,7 +87,16 @@ namespace ft
         // Increment/Decrement
         Map_iterator& operator++(void)
         {
-            if (_point->right)
+            Node* tmp;
+
+            tmp = _point->parentMax();
+            tmp = tmp->childMax();
+            if (_point == tmp)
+            {
+                _point = _point->pointEnd;
+                return (*this);
+            }
+            else if (_point->right)
             {
                 _point = _point->right->childMin();
                 return (*this);
@@ -107,7 +116,7 @@ namespace ft
                     return (*this);
                 }
             }
-            _point = _end;
+            _point = _point->pointEnd;
             return (*this);
         }
 
