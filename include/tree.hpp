@@ -86,12 +86,11 @@ namespace ft
         key_compare            _comp;
         Node*                  _point;
         Node*                  _end;
-        size_type              _size;
 
       public:
         Tree(const key_compare&    comp = key_compare(),
              const allocator_type& alloc = allocator_type())
-            : _alloc(alloc), _comp(comp), _point(NULL), _size(0)
+            : _alloc(alloc), _comp(comp), _point(NULL)
         {
             _end = _allocNode.allocate(1);
             _end->parent = NULL;
@@ -112,6 +111,17 @@ namespace ft
             if (_point)
                 clear(_point);
             _allocNode.deallocate(_end, 1);
+        }
+
+        Node* copyNode(Node* dest, Node* src)
+        {
+            if (src)
+            {
+                dest = copyNode(dest, src->left);
+                dest = copyNode(dest, src->right);
+                dest = insertNode(dest, src->value);
+            }
+            return dest;
         }
 
         // Iterators
@@ -180,7 +190,7 @@ namespace ft
 
         size_type max_size() const
         {
-            return (_allocNode.max_size());
+            return (_alloc.max_size());
         }
 
         // Element access
@@ -189,9 +199,8 @@ namespace ft
             Node* node = this->find(k);
             if (node)
                 return node->value.second;
-            _point = insertNode(
-                _point,
-                ft::make_pair< const key_type, mapped_type >(k, mapped_type()));
+            insert(_point, ft::make_pair< const key_type, mapped_type >(
+                               k, mapped_type()));
             updateEnd();
             return (*this)[k];
         }
@@ -251,7 +260,7 @@ namespace ft
             if (node->left)
                 node = node->left;
             else
-                node->right;
+                node = node->right;
             if (node)
                 node->parent = tmp->parent;
             _alloc.destroy(&tmp->value);
@@ -260,7 +269,7 @@ namespace ft
 
         void midBranch(Node* node)
         { //
-            Node* tmp = node->right->min();
+            Node* tmp = node->right->childMin();
 
             // switch them
             if (tmp != node->right)
@@ -285,9 +294,9 @@ namespace ft
             if (!node)
                 return;
             if (_comp(key, node->value.first))
-                node->left = erase(node->left, key);
+                erase(node->left, key);
             else if (_comp(node->value.first, key))
-                node->right = erase(node->right, key);
+                erase(node->right, key);
             else
             {
                 if (!node->left || !node->right)
@@ -308,6 +317,8 @@ namespace ft
                 this->_alloc.destroy(&node->value);
                 this->_allocNode.deallocate(node, 1);
             }
+            _point = NULL;
+            updateEnd();
         }
 
         void swap(Tree& x)
@@ -431,26 +442,26 @@ namespace ft
             int nb = getBalance(node);
 
             // Left left case
-            if (nb < -1 && balanceFactor(node->left) <= 0)
+            if (nb < -1 && getBalance(node->left) <= 0)
             {
                 rotateRight(node);
                 return;
             }
             // Right right case
-            if (nb > 1 && balanceFactor(node->right) >= 0)
+            if (nb > 1 && getBalance(node->right) >= 0)
             {
                 rotateLeft(node);
                 return;
             }
             // Left right case
-            if (nb < -1 && balanceFactor(node->left) > 0)
+            if (nb < -1 && getBalance(node->left) > 0)
             {
                 rotateLeft(node->left);
                 rotateRight(node);
                 return;
             }
             // Right left case
-            if (nb > 1 && balanceFactor(node->right) < 0)
+            if (nb > 1 && getBalance(node->right) < 0)
             {
                 rotateRight(node->right);
                 rotateLeft(node);

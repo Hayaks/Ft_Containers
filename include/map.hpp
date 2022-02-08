@@ -60,6 +60,14 @@ namespace ft
         // Destructor
         ~map(){};
 
+        /*map& operator=(const map& x)
+        {
+            (void)x;
+            clear();
+            insert(x.begin(), x.end());
+            return *this;
+        }*/
+
         // Iterators
         iterator begin()
         {
@@ -154,15 +162,14 @@ namespace ft
 
         void erase(iterator position)
         {
-            erase(*position.first);
-            _tree.updateEnd();
+            erase((*position).first);
         }
 
         size_type erase(const key_type& k)
         {
             size_type nb_element = size();
 
-            _tree.erase(_tree->point, k);
+            _tree.erase(_tree.getPoint(), k);
             _tree.updateEnd();
             return (nb_element != size());
         }
@@ -174,7 +181,7 @@ namespace ft
             {
                 tmp = first;
                 ++first;
-                this->erase(tmp);
+                erase(tmp);
                 _tree.updateEnd();
             }
         }
@@ -186,8 +193,9 @@ namespace ft
 
         void clear()
         {
-            if (_tree.getPoint())
-                _tree.clear(_tree.getPoint());
+            // if (_tree.getPoint())
+            //  _tree.clear(_tree.getPoint());
+            erase(begin(), end());
         }
 
         // Observers

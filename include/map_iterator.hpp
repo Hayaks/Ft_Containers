@@ -55,7 +55,7 @@ namespace ft
             return _end;
         }
 
-        Map_iterator& operator=(Map_iterator const& src)
+        Map_iterator& operator=(const Map_iterator& src)
         {
             _point = src.getPoint();
             _end = src.getEnd();
