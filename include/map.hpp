@@ -27,8 +27,8 @@ namespace ft
         typedef typename tree::const_reference           const_reference;
         typedef typename tree::pointer                   pointer;
         typedef typename tree::const_pointer             const_pointer;
-        typedef Map_iterator< tree, node >               iterator;
-        typedef Map_iterator< const_tree, node >         const_iterator;
+        typedef Map_iterator< tree >                     iterator;
+        typedef Map_iterator< const_tree, tree >         const_iterator;
         typedef ReverseIterator< iterator >              reverse_iterator;
         typedef ReverseIterator< const_iterator >        const_reverse_iterator;
         typedef std::ptrdiff_t                           difference_type;
@@ -137,7 +137,7 @@ namespace ft
             size_type              nb_element = size();
             pair< iterator, bool > ret;
 
-            _tree.insert(_tree->_point, val);
+            _tree.insert(_tree.getPoint(), val);
             _tree.updateEnd();
             ret.first = find(val.first);
             ret.second = (nb_element != size());

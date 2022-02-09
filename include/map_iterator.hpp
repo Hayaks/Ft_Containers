@@ -11,7 +11,7 @@
 
 namespace ft
 {
-    template < class T, class N >
+    template < class T, class T_bis = T >
     class Map_iterator
     {
       public:
@@ -21,7 +21,7 @@ namespace ft
         typedef value_type*                     pointer;
         typedef value_type&                     reference;
         typedef std::bidirectional_iterator_tag iterator_category;
-        typedef N                               Node;
+        typedef typename T_bis::Node            Node;
 
       protected:
         Node* _point;
@@ -33,7 +33,7 @@ namespace ft
         {
         }
 
-        Map_iterator(const Map_iterator< T, N >& src)
+        Map_iterator(const Map_iterator< T_bis >& src)
             : _point(src.getPoint()), _end(src.getEnd())
         {
         }
@@ -55,7 +55,7 @@ namespace ft
             return _end;
         }
 
-        Map_iterator& operator=(const Map_iterator& src)
+        Map_iterator& operator=(const Map_iterator< T_bis >& src)
         {
             _point = src.getPoint();
             _end = src.getEnd();
