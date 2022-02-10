@@ -58,6 +58,21 @@ namespace ft
                     tmp = tmp->parent;
                 return (tmp);
             }
+
+            void setParent(Node* src)
+            {
+                parent = src;
+            }
+
+            void setLeft(Node* src)
+            {
+                left = src;
+            }
+
+            void setRight(Node* src)
+            {
+                right = src;
+            }
         };
 
         class value_compare
@@ -96,7 +111,7 @@ namespace ft
             _end->parent = NULL;
             _end->left = NULL;
             _end->right = NULL;
-            _end->pointEnd = NULL;
+            _end->pointEnd = _end;
         }
 
         // Constructor
@@ -137,6 +152,8 @@ namespace ft
 
         Node* getBegin() const
         {
+            if (!_point)
+                return (_end);
             Node* tmp = _point;
             while (tmp->left)
                 tmp = tmp->left;
@@ -254,20 +271,43 @@ namespace ft
             // updateEnd();
         }
 
-        void endBranch(Node* node)
+        Node* endBranch(Node* node)
+        {
+            Node* tmp = NULL;
+            if (node->parent)
+            {
+                tmp = node->parent;
+                if (node->parent->left == node)
+                    node->parent->left = NULL;
+                else
+                    node->parent->right = NULL;
+            }
+            _alloc.destroy(&node->value);
+            _allocNode.deallocate(node, 1);
+            return (tmp);
+        }
+
+        Node* oneBranch(Node* node)
         {
             Node* tmp = node;
             if (node->left)
                 node = node->left;
             else
                 node = node->right;
-            if (node)
-                node->parent = tmp->parent;
+            if (tmp->parent)
+            {
+                if (key_compare()(tmp->parent->value.first, tmp->value.first))
+                    tmp->parent->right = node;
+                else
+                    tmp->parent->left = node;
+            }
+            node->setParent(tmp->parent);
             _alloc.destroy(&tmp->value);
             _allocNode.deallocate(tmp, 1);
+            return (node);
         }
 
-        void midBranch(Node* node)
+        Node* midBranch(Node* node)
         { //
             Node* tmp = node->right->childMin();
 
@@ -282,11 +322,12 @@ namespace ft
                 tmp->left = node->left;
                 node->left->parent = tmp;
             }
-            tmp->parent->left = 0;
+            tmp->parent->left = NULL;
             tmp->parent = node->parent;
             _alloc.destroy(&node->value);
             _allocNode.deallocate(node, 1);
             node = tmp;
+            return (node);
         }
 
         void erase(Node* node, const key_type key)
@@ -299,10 +340,12 @@ namespace ft
                 erase(node->right, key);
             else
             {
-                if (!node->left || !node->right)
-                    endBranch(node);
+                if (!node->left && !node->right)
+                    node = endBranch(node);
+                else if (!node->left || !node->right)
+                    node = oneBranch(node);
                 else
-                    midBranch(node);
+                    node = midBranch(node);
             }
             balanceErase(node);
             // updateEnd();
@@ -314,8 +357,8 @@ namespace ft
             {
                 clear(node->left);
                 clear(node->right);
-                this->_alloc.destroy(&node->value);
-                this->_allocNode.deallocate(node, 1);
+                _alloc.destroy(&node->value);
+                _allocNode.deallocate(node, 1);
             }
             _point = NULL;
             updateEnd();
@@ -440,28 +483,27 @@ namespace ft
                 return;
 
             int nb = getBalance(node);
-
             // Left left case
-            if (nb < -1 && getBalance(node->left) <= 0)
+            if (nb > 1 && getBalance(node->left) >= 0)
             {
                 rotateRight(node);
                 return;
             }
-            // Right right case
-            if (nb > 1 && getBalance(node->right) >= 0)
-            {
-                rotateLeft(node);
-                return;
-            }
             // Left right case
-            if (nb < -1 && getBalance(node->left) > 0)
+            if (nb > 1 && getBalance(node->left) < 0)
             {
                 rotateLeft(node->left);
                 rotateRight(node);
                 return;
             }
+            // Right right case
+            if (nb < -1 && getBalance(node->right) <= 0)
+            {
+                rotateLeft(node);
+                return;
+            }
             // Right left case
-            if (nb > 1 && getBalance(node->right) < 0)
+            if (nb < -1 && getBalance(node->right) > 0)
             {
                 rotateRight(node->right);
                 rotateLeft(node);

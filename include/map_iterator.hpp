@@ -87,15 +87,18 @@ namespace ft
         // Increment/Decrement
         Map_iterator& operator++(void)
         {
-            Node* tmp;
+            Node* tmp_end = search_end();
 
-            tmp = _point->parentMax();
-            tmp = tmp->childMax();
-            if (_point == tmp)
+            if (_point == tmp_end)
             {
                 _point = _point->pointEnd;
                 return (*this);
             }
+            /*else if (_point == _point->pointEnd) //
+            {
+                _point = tmp_end;
+                return (*this);
+            }*/
             else if (_point->right)
             {
                 _point = _point->right->childMin();
@@ -122,6 +125,19 @@ namespace ft
 
         Map_iterator& operator--(void)
         {
+            // Node* tmp_end = search_end();
+            // Node* tmp_begin = search_begin();
+
+            /*if (_point == tmp_begin)
+            {
+                _point = tmp_end->pointEnd;
+                return (*this);
+            }
+            else if (_point == tmp_end->pointEnd)
+            {
+                _point = tmp_end;
+                return (*this);
+            }*/
             if (_point->left)
             {
                 _point = _point->left->childMax();
@@ -169,8 +185,24 @@ namespace ft
                     tmp = tmp->parent;
                 while (tmp && tmp->right)
                     tmp = tmp->right;
-                return (static_cast< Node* >(tmp));
+                return (tmp);
             }
+            //_point = _end->pointEnd->parentMax();
+            return (NULL);
+        }
+
+        Node* search_begin()
+        {
+            if (_point)
+            {
+                Node* tmp = _point;
+                while (tmp && tmp->parent)
+                    tmp = tmp->parent;
+                while (tmp && tmp->left)
+                    tmp = tmp->left;
+                return (tmp);
+            }
+            //_point = _end->pointEnd->parentMax();
             return (NULL);
         }
     };
