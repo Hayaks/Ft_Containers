@@ -223,7 +223,7 @@ namespace ft
         }
 
         // Modifiers
-        void firstNode(const value_type& val)
+        Node* firstNode(const value_type& val)
         {
             _point = _allocNode.allocate(1);
             _alloc.construct(&_point->value, val);
@@ -231,9 +231,10 @@ namespace ft
             _point->left = NULL;
             _point->right = NULL;
             _point->pointEnd = _end;
+            return (_point);
         }
 
-        void insertNode(Node* parent, value_type val)
+        Node* insertNode(Node* parent, value_type val)
         {
             Node* node;
 
@@ -247,28 +248,29 @@ namespace ft
                 parent->right = node;
             else if (_comp(node->value.first, parent->value.first))
                 parent->left = node;
+            return (node);
+        }
+
+        Node* newInsert(Node* node, const value_type& val, Node* parent = 0)
+        {
+            if (_point == NULL)
+                return (firstNode(val));
+            else if (!node)
+                return (insertNode(parent, val));
+            if (_comp(val.first, node->value.first))
+                node->left = newInsert(node->left, val, node);
+            else if (_comp(node->value.first, val.first))
+                node->right = newInsert(node->right, val, node);
+            else
+                return (node);
+            balanceInsert(node, val.first);
+            return (node);
         }
 
         void insert(Node* node, const value_type& val, Node* parent = 0)
         {
-            if (_point == NULL)
-            {
-                firstNode(val);
-                return;
-            }
-            else if (!node)
-            {
-                insertNode(parent, val);
-                return;
-            }
-            if (_comp(val.first, node->value.first))
-                insert(node->left, val, node);
-            else if (_comp(node->value.first, val.first))
-                insert(node->right, val, node);
-            else
-                return;
-            balanceInsert(node, val.first);
-            // updateEnd();
+            node = newInsert(node, val, parent);
+            updateEnd();
         }
 
         Node* endBranch(Node* node)
@@ -301,8 +303,8 @@ namespace ft
                 else
                     tmp->parent->left = node;
             }
-            // node->setParent(tmp->parent);
-            node->parent = tmp->parent;
+            node->setParent(tmp->parent);
+            // node->parent = tmp->parent;
             _alloc.destroy(&tmp->value);
             _allocNode.deallocate(tmp, 1);
             return (node);
@@ -330,14 +332,14 @@ namespace ft
             return (node);
         }
 
-        Node* erase(Node* node, const key_type key)
+        Node* newErase(Node* node, const key_type key)
         {
             if (!node)
                 return (node);
             if (_comp(key, node->value.first))
-                node->left = erase(node->left, key);
+                node->left = newErase(node->left, key);
             else if (_comp(node->value.first, key))
-                node->right = erase(node->right, key);
+                node->right = newErase(node->right, key);
             else
             {
                 if (!node->left && !node->right)
@@ -349,7 +351,12 @@ namespace ft
             }
             balanceErase(node);
             return (node);
-            // updateEnd();
+        }
+
+        void erase(Node* node, const key_type key)
+        {
+            node = newErase(node, key);
+            updateEnd();
         }
 
         void clear(Node* node)

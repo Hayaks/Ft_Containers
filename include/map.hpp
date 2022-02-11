@@ -144,7 +144,6 @@ namespace ft
             pair< iterator, bool > ret;
 
             _tree.insert(_tree.getPoint(), val);
-            _tree.updateEnd();
             ret.first = find(val.first);
             ret.second = (nb_element != size());
             return (ret);
@@ -160,10 +159,7 @@ namespace ft
         void insert(InputIterator first, InputIterator last)
         {
             for (InputIterator it = first; it != last; ++it)
-            {
                 _tree.insert(_tree.getPoint(), *it);
-                _tree.updateEnd();
-            }
         }
 
         void erase(iterator position)
@@ -175,19 +171,17 @@ namespace ft
         {
             size_type nb_element = size();
             _tree.erase(_tree.getPoint(), k);
-            _tree.updateEnd();
             return (nb_element != size());
         }
 
         void erase(iterator first, iterator last)
-        { //
+        {
             iterator tmp;
             while (first != last)
             {
                 tmp = first;
                 ++first;
                 erase(tmp);
-                _tree.updateEnd();
             }
         }
 
