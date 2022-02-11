@@ -486,23 +486,31 @@ namespace ft
 
             int nb = getBalance(node);
             // Left left case
-            if (nb > 1 && getBalance(node->left) >= 0)
-                return (rotateRight(node));
+            if (node->left)
+                // if (nb < -1 && getBalance(node->left) <= 0)
+                if (nb > 1 && getBalance(node->left) >= 0) // le mien
+                    return (rotateRight(node));
             // Left right case
-            if (nb > 1 && getBalance(node->left) < 0)
-            {
-                node->left = rotateLeft(node->left);
-                return (rotateRight(node));
-            }
-            // Right right case
-            if (nb < -1 && getBalance(node->right) <= 0)
-                return (rotateLeft(node));
+            if (node->left)
+                // if (nb < -1 && getBalance(node->left) > 0)
+                if (nb > 1 && getBalance(node->left) < 0) // le mien
+                {
+                    node->left = rotateLeft(node->left);
+                    return (rotateRight(node));
+                }
+            if (node->right)
+                // Right right case
+                // if (nb > 1 && getBalance(node->right) >= 0)
+                if (nb < -1 && getBalance(node->right) <= 0) // le mien
+                    return (rotateLeft(node));
             // Right left case
-            if (nb < -1 && getBalance(node->right) > 0)
-            {
-                node->right = rotateRight(node->right);
-                return (rotateLeft(node));
-            }
+            if (node->right)
+                // if (nb > 1 && getBalance(node->right) < 0)
+                if (nb < -1 && getBalance(node->right) > 0) // le mien
+                {
+                    node->right = rotateRight(node->right);
+                    return (rotateLeft(node));
+                }
             return (node);
         }
     };
