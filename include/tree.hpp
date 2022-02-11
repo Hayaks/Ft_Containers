@@ -263,7 +263,7 @@ namespace ft
                 node->right = newInsert(node->right, val, node);
             else
                 return (node);
-            balanceInsert(node, val.first);
+            node = balanceInsert(node, val.first);
             return (node);
         }
 
@@ -349,7 +349,7 @@ namespace ft
                 else
                     node = midBranch(node);
             }
-            balanceErase(node);
+            node = balanceErase(node);
             return (node);
         }
 
@@ -413,7 +413,7 @@ namespace ft
         }
 
         // Balancing
-        void rotateLeft(Node* node)
+        Node* rotateLeft(Node* node)
         {
             Node* new_parent = node->right;
             Node* mid_node = new_parent->left;
@@ -424,9 +424,10 @@ namespace ft
             node->right = mid_node;
             if (mid_node)
                 mid_node->parent = node;
+            return (new_parent);
         }
 
-        void rotateRight(Node* node)
+        Node* rotateRight(Node* node)
         {
             Node* new_parent = node->left;
             Node* mid_node = new_parent->right;
@@ -437,6 +438,7 @@ namespace ft
             node->left = mid_node;
             if (mid_node)
                 mid_node->parent = node;
+            return (new_parent);
         }
 
         int getBalance(Node* node)
@@ -446,78 +448,62 @@ namespace ft
             return (sizeHeight(node->left) - sizeHeight(node->right));
         }
 
-        void balanceInsert(Node* node, const key_type key)
+        Node* balanceInsert(Node* node, const key_type key)
         {
             if (!node)
-                return;
+                return (node);
             int nb = getBalance(node);
 
             // Left left case
             if (node->left)
                 if (nb < -1 && _comp(key, node->left->value.first))
-                {
-                    rotateRight(node);
-                    return;
-                }
+                    return (rotateRight(node));
             // Right right case
             if (node->right)
                 if (nb > 1 && _comp(node->right->value.first, key))
-                {
-                    rotateLeft(node);
-                    return;
-                }
+                    return (rotateLeft(node));
             // Left right case
             if (node->left)
                 if (nb < -1 && _comp(node->left->value.first, key))
                 {
-                    rotateLeft(node->left);
-                    rotateRight(node);
-                    return;
+                    node->left = rotateLeft(node->left);
+                    return (rotateRight(node));
                 }
             // Right left case
             if (node->right)
                 if (nb > 1 && _comp(key, node->right->value.first))
                 {
-                    rotateRight(node->right);
-                    rotateLeft(node);
-                    return;
+                    node->right = rotateRight(node->right);
+                    return (rotateLeft(node));
                 }
-            return;
+            return (node);
         }
 
-        void balanceErase(Node* node)
+        Node* balanceErase(Node* node)
         {
             if (!node)
-                return;
+                return (node);
 
             int nb = getBalance(node);
             // Left left case
             if (nb > 1 && getBalance(node->left) >= 0)
-            {
-                rotateRight(node);
-                return;
-            }
+                return (rotateRight(node));
             // Left right case
             if (nb > 1 && getBalance(node->left) < 0)
             {
-                rotateLeft(node->left);
-                rotateRight(node);
-                return;
+                node->left = rotateLeft(node->left);
+                return (rotateRight(node));
             }
             // Right right case
             if (nb < -1 && getBalance(node->right) <= 0)
-            {
-                rotateLeft(node);
-                return;
-            }
+                return (rotateLeft(node));
             // Right left case
             if (nb < -1 && getBalance(node->right) > 0)
             {
-                rotateRight(node->right);
-                rotateLeft(node);
-                return;
+                node->right = rotateRight(node->right);
+                return (rotateLeft(node));
             }
-            return;
+            return (node);
         }
     };
 } // namespace ft
