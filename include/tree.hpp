@@ -270,6 +270,7 @@ namespace ft
         void insert(Node* node, const value_type& val, Node* parent = 0)
         {
             node = newInsert(node, val, parent);
+            _point = _point->parentMax();
             updateEnd();
         }
 
@@ -356,6 +357,7 @@ namespace ft
         void erase(Node* node, const key_type key)
         {
             node = newErase(node, key);
+            _point = _point->parentMax();
             updateEnd();
         }
 
@@ -456,22 +458,22 @@ namespace ft
 
             // Left left case
             if (node->left)
-                if (nb < -1 && _comp(key, node->left->value.first))
+                if (nb > 1 && _comp(key, node->left->value.first))
                     return (rotateRight(node));
             // Right right case
             if (node->right)
-                if (nb > 1 && _comp(node->right->value.first, key))
+                if (nb < -1 && _comp(node->right->value.first, key))
                     return (rotateLeft(node));
             // Left right case
             if (node->left)
-                if (nb < -1 && _comp(node->left->value.first, key))
+                if (nb > 1 && _comp(node->left->value.first, key))
                 {
                     node->left = rotateLeft(node->left);
                     return (rotateRight(node));
                 }
             // Right left case
             if (node->right)
-                if (nb > 1 && _comp(key, node->right->value.first))
+                if (nb < -1 && _comp(key, node->right->value.first))
                 {
                     node->right = rotateRight(node->right);
                     return (rotateLeft(node));
