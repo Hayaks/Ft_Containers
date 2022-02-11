@@ -174,7 +174,6 @@ namespace ft
         size_type erase(const key_type& k)
         {
             size_type nb_element = size();
-
             _tree.erase(_tree.getPoint(), k);
             _tree.updateEnd();
             return (nb_element != size());

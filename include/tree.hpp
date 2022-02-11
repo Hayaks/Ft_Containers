@@ -296,22 +296,22 @@ namespace ft
                 node = node->right;
             if (tmp->parent)
             {
-                if (key_compare()(tmp->parent->value.first, tmp->value.first))
+                if (_comp(tmp->parent->value.first, tmp->value.first))
                     tmp->parent->right = node;
                 else
                     tmp->parent->left = node;
             }
-            node->setParent(tmp->parent);
+            // node->setParent(tmp->parent);
+            node->parent = tmp->parent;
             _alloc.destroy(&tmp->value);
             _allocNode.deallocate(tmp, 1);
             return (node);
         }
 
         Node* midBranch(Node* node)
-        { //
+        {
             Node* tmp = node->right->childMin();
 
-            // switch them
             if (tmp != node->right)
             {
                 tmp->right = node->right;
@@ -330,14 +330,14 @@ namespace ft
             return (node);
         }
 
-        void erase(Node* node, const key_type key)
+        Node* erase(Node* node, const key_type key)
         {
             if (!node)
-                return;
+                return (node);
             if (_comp(key, node->value.first))
-                erase(node->left, key);
+                node->left = erase(node->left, key);
             else if (_comp(node->value.first, key))
-                erase(node->right, key);
+                node->right = erase(node->right, key);
             else
             {
                 if (!node->left && !node->right)
@@ -348,6 +348,7 @@ namespace ft
                     node = midBranch(node);
             }
             balanceErase(node);
+            return (node);
             // updateEnd();
         }
 

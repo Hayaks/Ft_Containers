@@ -104,7 +104,7 @@ namespace ft
                 _point = _point->right->childMin();
                 return (*this);
             }
-            else if (_point->parent)
+            else
             {
                 Node* tmp_parent = _point->parent;
                 Node* tmp = _point;
@@ -132,8 +132,8 @@ namespace ft
             {
                 _point = tmp_end->pointEnd;
                 return (*this);
-            }
-            else if (_point == tmp_end->pointEnd)
+            }*/
+            /*else if (_point == tmp_end->pointEnd)
             {
                 _point = tmp_end;
                 return (*this);
