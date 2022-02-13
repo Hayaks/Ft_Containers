@@ -287,7 +287,7 @@ namespace ft
             }
             _alloc.destroy(&node->value);
             _allocNode.deallocate(node, 1);
-            return (tmp);
+            return (NULL);
         }
 
         Node* oneBranch(Node* node)
@@ -357,7 +357,10 @@ namespace ft
         void erase(Node* node, const key_type key)
         {
             node = newErase(node, key);
-            _point = _point->parentMax();
+            if (node != NULL)
+                _point = node->parentMax(); //_point->parentMax();
+            else
+                _point = NULL;
             updateEnd();
         }
 
@@ -379,6 +382,10 @@ namespace ft
             Node* tmp = _point;
             _point = x._point;
             x._point = tmp;
+
+            Node* tmp_end = _end;
+            _end = x._end;
+            x._end = tmp_end;
         }
 
         // Observers

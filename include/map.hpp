@@ -213,6 +213,8 @@ namespace ft
         {
             if (_tree.size() == 0) // Verif
                 return end();
+            if (_tree.find(k) == NULL)
+                return (end());
             return (iterator(_tree.find(k)));
         }
 
@@ -220,6 +222,8 @@ namespace ft
         {
             if (_tree.size() == 0) // Verif
                 return end();
+            if (_tree.find(k) == NULL)
+                return (end());
             return (const_iterator(_tree.find(k)));
         }
 
