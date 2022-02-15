@@ -16,5 +16,8 @@
 
 // Vector
 void ft_vector_constructor();
+void ft_vector_iterator();
+void ft_vector_compare();
+void ft_vector_capacity();
 
 #endif

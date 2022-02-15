@@ -1,13 +1,13 @@
-NAME			= container
-STL				= stl_container
+NAME			= ft_container
+STD				= std_container
 
 OBJS_DIR		= objs/
 
 OBJS			= $(addprefix $(OBJS_DIR), $(SRCS:.cpp=.o))
 
-OBJS_DIR_STL	= objs_stl/
+OBJS_DIR_STD	= objs_STD/
 
-OBJS_STL		= $(addprefix $(OBJS_DIR_STL), $(SRCS:.cpp=.o))
+OBJS_STD		= $(addprefix $(OBJS_DIR_STD), $(SRCS:.cpp=.o))
 
 HEADER			= -I ./include/
 
@@ -22,12 +22,13 @@ CFLAGS 			= -Wall -Wextra -Werror -std=c++98
 FSAN			= -g3 -fsanitize=address
 RM				= rm -rf
 
-all:			$(NAME) $(STL)
+all:			$(NAME) $(STD)
 
 diff:			all
 				mkdir -p diff/
-				./$(NAME) > diff/container.txt
-				./$(STL) > diff/stl.txt
+				./$(NAME) > diff/ft.txt
+				./$(STD) > diff/std.txt
+				diff diff/ft.txt diff/std.txt ; [ $$? -eq 1 ] 
 
 $(NAME):		$(OBJS_DIR) $(OBJS)
 				$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
@@ -38,13 +39,13 @@ $(OBJS_DIR):
 $(OBJS_DIR)%.o:	$(SRCS_DIR)%.cpp
 				$(CC) $(CFLAGS) -DFT=ft $(HEADER) -c $< -o $@
 
-$(STL):			$(OBJS_DIR_STL) $(OBJS_STL)
-				$(CC) $(CFLAGS) $(OBJS_STL) -o $(STL)
+$(STD):			$(OBJS_DIR_STD) $(OBJS_STD)
+				$(CC) $(CFLAGS) $(OBJS_STD) -o $(STD)
 
-$(OBJS_DIR_STL):
-				@mkdir $(OBJS_DIR_STL)
+$(OBJS_DIR_STD):
+				@mkdir $(OBJS_DIR_STD)
 
-$(OBJS_DIR_STL)%.o:	$(SRCS_DIR)%.cpp
+$(OBJS_DIR_STD)%.o:	$(SRCS_DIR)%.cpp
 				$(CC) $(CFLAGS) -DFT=std $(HEADER) -c $< -o $@
 
 fsan:			$(OBJS_DIR) $(OBJS)
@@ -54,10 +55,10 @@ leaks:			$(NAME)
 				valgrind --tool=memcheck --leak-check=full --leak-resolution=high --show-reachable=yes --show-leak-kinds=all --track-origins=yes ./$(NAME)
 
 clean:
-				$(RM) $(OBJS_DIR) $(OBJS_DIR_STL)
+				$(RM) $(OBJS_DIR) $(OBJS_DIR_STD)
 
 fclean:			clean
-				$(RM) $(NAME) $(STL)
+				$(RM) $(NAME) $(STD) diff
 
 re:				fclean all
 
