@@ -13,7 +13,7 @@ HEADER			= -I ./include/
 
 SRCS_DIR		= ./src/
 
-SRCS			= vector.cpp main.cpp
+SRCS			= vector.cpp stack.cpp map.cpp main.cpp
 
 FOLDER			= $(addprefix $(SRCS_DIR), $(SRCS))
 

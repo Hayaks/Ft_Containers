@@ -34,8 +34,7 @@ namespace ft
         typedef ReverseIterator< const_iterator >        const_reverse_iterator;
         typedef std::ptrdiff_t                           difference_type;
         typedef size_t                                   size_type;
-        // size_type _size;
-        tree _tree;
+        tree                                             _tree;
 
         // Constructor
         explicit map(const key_compare&    comp = key_compare(),
@@ -67,11 +66,6 @@ namespace ft
             clear();
             insert(x.begin(), x.end());
             return *this;
-
-            /*if (this == &x)
-                return *this;
-            this->_tree = x._tree;
-            return *this;*/
         }
 
         // Iterators

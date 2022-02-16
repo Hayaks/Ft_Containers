@@ -94,11 +94,6 @@ namespace ft
                 _point = _point->pointEnd;
                 return (*this);
             }
-            /*else if (_point == _point->pointEnd) //
-            {
-                _point = tmp_end;
-                return (*this);
-            }*/
             else if (_point->right)
             {
                 _point = _point->right->childMin();
@@ -125,19 +120,6 @@ namespace ft
 
         Map_iterator& operator--(void)
         {
-            // Node* tmp_end = search_end();
-            // Node* tmp_begin = search_begin();
-
-            /*if (_point == tmp_begin)
-            {
-                _point = tmp_end->pointEnd;
-                return (*this);
-            }*/
-            /*else if (_point == tmp_end->pointEnd)
-            {
-                _point = tmp_end;
-                return (*this);
-            }*/
             if (_point->left)
             {
                 _point = _point->left->childMax();

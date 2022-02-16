@@ -305,7 +305,6 @@ namespace ft
                     tmp->parent->left = node;
             }
             node->setParent(tmp->parent);
-            // node->parent = tmp->parent;
             _alloc.destroy(&tmp->value);
             _allocNode.deallocate(tmp, 1);
             return (node);
@@ -358,7 +357,7 @@ namespace ft
         {
             node = newErase(node, key);
             if (node != NULL)
-                _point = node->parentMax(); //_point->parentMax();
+                _point = node->parentMax();
             else
                 _point = NULL;
             updateEnd();
@@ -496,26 +495,22 @@ namespace ft
             int nb = getBalance(node);
             // Left left case
             if (node->left)
-                // if (nb < -1 && getBalance(node->left) <= 0)
-                if (nb > 1 && getBalance(node->left) >= 0) // le mien
+                if (nb > 1 && getBalance(node->left) >= 0)
                     return (rotateRight(node));
             // Left right case
             if (node->left)
-                // if (nb < -1 && getBalance(node->left) > 0)
-                if (nb > 1 && getBalance(node->left) < 0) // le mien
+                if (nb > 1 && getBalance(node->left) < 0)
                 {
                     node->left = rotateLeft(node->left);
                     return (rotateRight(node));
                 }
             if (node->right)
                 // Right right case
-                // if (nb > 1 && getBalance(node->right) >= 0)
-                if (nb < -1 && getBalance(node->right) <= 0) // le mien
+                if (nb < -1 && getBalance(node->right) <= 0)
                     return (rotateLeft(node));
             // Right left case
             if (node->right)
-                // if (nb > 1 && getBalance(node->right) < 0)
-                if (nb < -1 && getBalance(node->right) > 0) // le mien
+                if (nb < -1 && getBalance(node->right) > 0)
                 {
                     node->right = rotateRight(node->right);
                     return (rotateLeft(node));
