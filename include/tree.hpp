@@ -276,10 +276,10 @@ namespace ft
 
         Node* endBranch(Node* node)
         {
-            Node* tmp = NULL;
+            // Node* tmp = NULL;
             if (node->parent)
             {
-                tmp = node->parent;
+                // tmp = node->parent;
                 if (node->parent->left == node)
                     node->parent->left = NULL;
                 else

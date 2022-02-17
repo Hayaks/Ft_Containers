@@ -218,14 +218,14 @@ namespace ft
 
         reference at(size_type n)
         {
-            if (n < 0 || n >= _size)
+            if (n >= _size)
                 throw std::out_of_range("Vector index out of range");
             return (_point[n]);
         }
 
         const_reference at(size_type n) const
         {
-            if (n < 0 || n >= _size)
+            if (n >= _size)
                 throw std::out_of_range("Vector index out of range");
             return (_point[n]);
         }
