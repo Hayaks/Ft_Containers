@@ -28,7 +28,7 @@ diff:			all
 				mkdir -p diff/
 				./$(NAME) > diff/ft.txt
 				./$(STD) > diff/std.txt
-				diff diff/ft.txt diff/std.txt ; [ $$? -eq 1 ] 
+				diff diff/ft.txt diff/std.txt > diff/diff.txt
 
 $(NAME):		$(OBJS_DIR) $(OBJS)
 				$(CC) $(CFLAGS) $(OBJS) -o $(NAME)

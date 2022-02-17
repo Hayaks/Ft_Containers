@@ -183,14 +183,14 @@ void ft_map_capacity()
     std::cout << YELLOW + "\nmap empty:" + CLEAN << std::endl;
     std::cout << GREEN << "\t-Empty: " << map_1.empty() << CLEAN << std::endl;
     std::cout << GREEN << "\t-Size: " << map_1.size() << CLEAN << std::endl;
-    std::cout << GREEN << "\t-Max_ize: " << map_1.max_size() << CLEAN
+    std::cout << GREEN << "\t-Max_size: " << map_1.max_size() << CLEAN
               << std::endl;
 
     map_1[3] = "SURPRISE";
     std::cout << YELLOW + "\nmap with a value:" + CLEAN << std::endl;
     std::cout << GREEN << "\t-Empty: " << map_1.empty() << CLEAN << std::endl;
     std::cout << GREEN << "\t-Size: " << map_1.size() << CLEAN << std::endl;
-    std::cout << GREEN << "\t-Max_ize: " << map_1.max_size() << CLEAN
+    std::cout << GREEN << "\t-Max_size: " << map_1.max_size() << CLEAN
               << std::endl;
 }
 
@@ -302,4 +302,63 @@ void ft_map_observers()
     std::cout << GREEN << "Value_cmp(begin(), end()) = "
               << map_1.value_comp()(*map_1.begin(), *map_1.end()) << CLEAN
               << std::endl;
+}
+
+void ft_map_operations()
+{
+    FT::map< int, std::string >           map_1;
+    FT::map< int, std::string >::iterator it;
+
+    map_1[6] = "Banane";
+    map_1[3] = "Pomme";
+    map_1[1] = "Avocat";
+    map_1[14] = "Litchi";
+
+    std::cout << WHITE + "\n||||| Operations |||||" + CLEAN << std::endl;
+    it = map_1.find(1);
+    std::cout << YELLOW + "\nFind[1]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Find? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.find(14);
+    std::cout << YELLOW + "\nFind[14]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Find? = " << (*it).first << CLEAN << std::endl;
+
+    std::cout << YELLOW + "\nCount[1]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Count = " << map_1.count(1) << CLEAN << std::endl;
+
+    std::cout << YELLOW + "\nCount[9]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Count = " << map_1.count(9) << CLEAN << std::endl;
+
+    it = map_1.lower_bound(5);
+    std::cout << YELLOW + "\nLower_bound[5]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.lower_bound(1);
+    std::cout << YELLOW + "\nLower_bound[1]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.lower_bound(12);
+    std::cout << YELLOW + "\nLower_bound[12]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.upper_bound(5);
+    std::cout << YELLOW + "\nUpper_bound[5]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.upper_bound(1);
+    std::cout << YELLOW + "\nUpper_bound[1]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    it = map_1.upper_bound(12);
+    std::cout << YELLOW + "\nUpper_bound[12]:" + CLEAN << std::endl;
+    std::cout << GREEN << "Value? = " << (*it).first << CLEAN << std::endl;
+
+    FT::pair< FT::map< int, std::string >::iterator,
+              FT::map< int, std::string >::iterator >
+        ret = map_1.equal_range(8);
+    std::cout << YELLOW + "\nEqual_range[8]:" + CLEAN << std::endl;
+    std::cout << GREEN << ret.first->first << " => " << ret.first->second
+              << CLEAN << std::endl;
+    std::cout << GREEN << ret.second->first << " => " << ret.second->second
+              << CLEAN << std::endl;
 }

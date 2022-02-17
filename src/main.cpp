@@ -29,6 +29,7 @@ void ft_map()
     ft_map_capacity();
     ft_map_modifiers();
     ft_map_observers();
+    ft_map_operations();
 }
 
 int main()
@@ -36,8 +37,8 @@ int main()
     clock_t begin = clock();
 
     ft_vector();
-    // ft_stack();
-    // ft_map();
+    ft_stack();
+    ft_map();
     clock_t end = clock();
     double  time_nb = (double)(end - begin) / CLOCKS_PER_SEC;
 

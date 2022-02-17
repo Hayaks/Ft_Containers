@@ -38,5 +38,6 @@ void ft_map_compare();
 void ft_map_capacity();
 void ft_map_modifiers();
 void ft_map_observers();
+void ft_map_operations();
 
 #endif
